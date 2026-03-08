@@ -13,8 +13,8 @@ endif()
 list(APPEND CMAKE_PREFIX_PATH "${CMAKE_BINARY_DIR}/build/${CMAKE_BUILD_TYPE}/generators")
 
 add_library(utilities
-	include/dummy.h
-	src/dummy.cpp
+	include/networking/socket.h
+	src/networking/socket.cpp
 )
 
 target_include_directories(utilities
