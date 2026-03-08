@@ -4,6 +4,19 @@
 
 #include <cstring>
 
+net::SocketException::SocketException(const std::string& context, int errno)
+    : std::runtime_error("Socket Error: "),
+      m_context(context),
+      m_errno(errno) {}
+
+const char* net::SocketException::what() const noexcept {
+  std::string error_msg = strerror(errno);
+  auto ret = m_context + error_msg;
+  return ret.c_str();
+}
+
+int net::SocketException::getErrorCode() const { return m_errno; }
+
 net::TcpSocket::TcpSocket(const std::string& ip, const std::string& port) {
   addrinfo hints;
   memset(&hints, 0, sizeof(addrinfo));

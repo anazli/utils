@@ -1,9 +1,22 @@
 #include <netdb.h>
 #include <sys/socket.h>
 
+#include <stdexcept>
 #include <string>
 
 namespace net {
+
+class SocketException : public std::runtime_error {
+ public:
+  SocketException(const std::string& context, int errno);
+
+  const char* what() const noexcept override;
+  int getErrorCode() const;
+
+ private:
+  std::string m_context;
+  int m_errno;
+};
 
 class TcpSocket {
  public:
