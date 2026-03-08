@@ -2,17 +2,20 @@
 
 #include <unistd.h>
 
+#include <cerrno>
 #include <cstring>
 
-net::SocketException::SocketException(const std::string& context, int errno)
+net::SocketException::SocketException(const std::string& context,
+                                      int error_code)
     : std::runtime_error("Socket Error: "),
       m_context(context),
-      m_errno(errno) {}
+      m_errno(error_code) {
+  std::string error_msg = gai_strerror(m_errno);
+  m_context += error_msg;
+}
 
 const char* net::SocketException::what() const noexcept {
-  std::string error_msg = strerror(errno);
-  auto ret = m_context + error_msg;
-  return ret.c_str();
+  return m_context.c_str();
 }
 
 int net::SocketException::getErrorCode() const { return m_errno; }
@@ -26,14 +29,15 @@ net::TcpSocket::TcpSocket(const std::string& ip, const std::string& port) {
 
   auto result = getaddrinfo(ip.c_str(), port.c_str(), &hints, &m_hints);
 
-  if (result == 0) {
-    // TODO throw
+  auto context = std::string("[TcpSocket::TcpSocket] ");
+  if (result != 0) {
+    throw SocketException(context, result);
   }
 
   m_socket_fd =
       socket(m_hints->ai_family, m_hints->ai_socktype, m_hints->ai_protocol);
   if (m_socket_fd == -1) {
-    // TODO throw;
+    throw SocketException(context, errno);
   }
 }
 

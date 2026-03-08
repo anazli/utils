@@ -8,7 +8,7 @@ namespace net {
 
 class SocketException : public std::runtime_error {
  public:
-  SocketException(const std::string& context, int errno);
+  SocketException(const std::string& context, int error_code);
 
   const char* what() const noexcept override;
   int getErrorCode() const;
