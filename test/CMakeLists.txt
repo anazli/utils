@@ -13,7 +13,6 @@ include(FetchContent)
   include(GoogleTest)
 
 add_executable(utilities_test
-  dummy_test.cpp
   socket_test.cpp
 )
 
