@@ -12,7 +12,7 @@ endif()
 
 list(APPEND CMAKE_PREFIX_PATH "${CMAKE_BINARY_DIR}/build/${CMAKE_BUILD_TYPE}/generators")
 
-add_library(utilities 
+add_library(utilities
 	include/dummy.h
 	src/dummy.cpp
 )
@@ -23,8 +23,7 @@ target_include_directories(utilities
 		$<INSTALL_INTERFACE:include>
 )
 
-option(BUILD_TESTS "Build tests" ON)
-if(BUILD_TESTS)
+if(ENABLE_TESTING)
 	enable_testing()
 	add_subdirectory(test)
 endif()
