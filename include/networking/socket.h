@@ -5,35 +5,22 @@
 
 namespace net {
 
-class Socket {
+class TcpSocket {
  public:
-  virtual ~Socket();
+  TcpSocket(const std::string& ip, const std::string& port);
+  ~TcpSocket();
 
   int getHandle() const;
   int getType() const;
   int getFamily() const;
 
-  virtual void bind() = 0;
-  virtual void connect() {};
-  virtual void listenAndAccept() {};
-
- protected:
-  Socket(int family, int type, int protocol);
-
-  addrinfo m_hints;
-  int m_socket_fd;
-};
-
-class TcpClient : public Socket {
- public:
-  TcpClient(const std::string& ip, int port);
-  TcpClient(const TcpClient&) = delete;
-  TcpClient& operator=(const TcpClient&) = delete;
-  ~TcpClient() override = default;
-
-  void bind() override {}
+  void bind() {};
+  void connect() {};
+  void listenAndAccept() {};
 
  private:
+  addrinfo* m_hints;
+  int m_socket_fd;
 };
 
 }  // namespace net

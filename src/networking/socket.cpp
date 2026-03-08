@@ -2,22 +2,34 @@
 
 #include <unistd.h>
 
-net::Socket::~Socket() {
-  if (m_socket_fd != -1) close(m_socket_fd);
-}
+#include <cstring>
 
-int net::Socket::getHandle() const { return m_socket_fd; }
+net::TcpSocket::TcpSocket(const std::string& ip, const std::string& port) {
+  addrinfo hints;
+  memset(&hints, 0, sizeof(addrinfo));
+  hints.ai_family = AF_INET;
+  hints.ai_socktype = SOCK_STREAM;
+  hints.ai_protocol = 0;
 
-int net::Socket::getType() const { return m_hints.ai_socktype; }
+  auto result = getaddrinfo(ip.c_str(), port.c_str(), &hints, &m_hints);
 
-int net::Socket::getFamily() const { return m_hints.ai_family; }
+  if (result == 0) {
+    // TODO throw
+  }
 
-net::Socket::Socket(int family, int type, int protocol) {
-  m_socket_fd = socket(family, type, protocol);
+  m_socket_fd =
+      socket(m_hints->ai_family, m_hints->ai_socktype, m_hints->ai_protocol);
   if (m_socket_fd == -1) {
     // TODO throw;
   }
 }
 
-net::TcpClient::TcpClient(const std::string& ip, int port)
-    : Socket(AF_INET, SOCK_STREAM, 0) {}
+net::TcpSocket::~TcpSocket() {
+  if (m_socket_fd != -1) close(m_socket_fd);
+}
+
+int net::TcpSocket::getHandle() const { return m_socket_fd; }
+
+int net::TcpSocket::getType() const { return m_hints->ai_socktype; }
+
+int net::TcpSocket::getFamily() const { return m_hints->ai_family; }
