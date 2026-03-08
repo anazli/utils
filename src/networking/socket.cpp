@@ -53,3 +53,10 @@ void net::TcpSocket::bind() {
     throw SocketException("[TcpSocket::bind]", strerror(errno));
   }
 }
+
+void net::TcpSocket::connect() {
+  if (::connect(m_socket_fd, m_address_info->ai_addr,
+                m_address_info->ai_addrlen) == -1) {
+    throw SocketException("[TcpSocket::bind]", strerror(errno));
+  }
+}

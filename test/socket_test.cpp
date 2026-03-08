@@ -35,3 +35,8 @@ TEST_F(SocketTest,
   net::TcpSocket s(local_ip.data(), test_port.data());
   ASSERT_NO_THROW(s.bind());
 }
+
+TEST_F(SocketTest, GivenValidSocketWhenItConnectsToAnAddressThenItDoesNoThrow) {
+  net::TcpSocket s(remote_ip.data(), test_port.data());
+  ASSERT_NO_THROW(s.connect());
+}

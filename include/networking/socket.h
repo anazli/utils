@@ -50,7 +50,7 @@ class TcpSocket {
   /*
    * Connects the socket to the provided address (for client usage)
    */
-  void connect() {};
+  void connect();
 
   /*
    * Binds the socket to a local address (for server usage)
