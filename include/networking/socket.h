@@ -25,12 +25,12 @@ class TcpSocket {
   int getType() const;
   int getFamily() const;
 
-  void bind() {};
+  void bind();
   void connect() {};
   void listenAndAccept() {};
 
  private:
-  addrinfo* m_hints;
+  addrinfo* m_address_info;
   int m_socket_fd;
 };
 

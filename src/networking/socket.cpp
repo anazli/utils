@@ -21,28 +21,28 @@ net::TcpSocket::TcpSocket(const std::string& ip, const std::string& port) {
   hints.ai_socktype = SOCK_STREAM;
   hints.ai_protocol = 0;
 
-  auto result = getaddrinfo(ip.c_str(), port.c_str(), &hints, &m_hints);
+  auto result = getaddrinfo(ip.c_str(), port.c_str(), &hints, &m_address_info);
 
   auto context = std::string("[TcpSocket::TcpSocket] ");
   if (result != 0) {
     throw SocketException(context, gai_strerror(result));
   }
 
-  m_socket_fd =
-      socket(m_hints->ai_family, m_hints->ai_socktype, m_hints->ai_protocol);
+  m_socket_fd = socket(m_address_info->ai_family, m_address_info->ai_socktype,
+                       m_address_info->ai_protocol);
   if (m_socket_fd == -1) {
-    freeaddrinfo(m_hints);
+    freeaddrinfo(m_address_info);
     throw SocketException(context, strerror(errno));
   }
 }
 
 net::TcpSocket::~TcpSocket() {
   if (m_socket_fd != -1) close(m_socket_fd);
-  if (m_hints != nullptr) freeaddrinfo(m_hints);
+  if (m_address_info != nullptr) freeaddrinfo(m_address_info);
 }
 
 int net::TcpSocket::getHandle() const { return m_socket_fd; }
 
-int net::TcpSocket::getType() const { return m_hints->ai_socktype; }
+int net::TcpSocket::getType() const { return m_address_info->ai_socktype; }
 
-int net::TcpSocket::getFamily() const { return m_hints->ai_family; }
+int net::TcpSocket::getFamily() const { return m_address_info->ai_family; }
