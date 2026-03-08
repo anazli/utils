@@ -19,3 +19,8 @@ TEST_F(SocketTest, GivenValidInputWhenConstructsThenSocketIsCreated) {
   EXPECT_THAT(s.getType(), Eq(SOCK_STREAM));
   EXPECT_THAT(s.getFamily(), Eq(AF_INET));
 }
+
+TEST_F(SocketTest, GivenValidSocketWhenBindsToAddressThenItDoesNotThrow) {
+  net::TcpSocket s("127.0.0.1", "8080");
+  ASSERT_NO_THROW(s.bind());
+}
