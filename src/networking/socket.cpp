@@ -2,23 +2,17 @@
 
 #include <unistd.h>
 
-#include <cerrno>
 #include <cstring>
 
 net::SocketException::SocketException(const std::string& context,
-                                      int error_code)
-    : std::runtime_error("Socket Error: "),
-      m_context(context),
-      m_errno(error_code) {
-  std::string error_msg = gai_strerror(m_errno);
-  m_context += error_msg;
+                                      const std::string& error)
+    : std::runtime_error("Socket Error: "), m_context(context) {
+  m_context += error;
 }
 
 const char* net::SocketException::what() const noexcept {
   return m_context.c_str();
 }
-
-int net::SocketException::getErrorCode() const { return m_errno; }
 
 net::TcpSocket::TcpSocket(const std::string& ip, const std::string& port) {
   addrinfo hints;
@@ -31,18 +25,20 @@ net::TcpSocket::TcpSocket(const std::string& ip, const std::string& port) {
 
   auto context = std::string("[TcpSocket::TcpSocket] ");
   if (result != 0) {
-    throw SocketException(context, result);
+    throw SocketException(context, gai_strerror(result));
   }
 
   m_socket_fd =
       socket(m_hints->ai_family, m_hints->ai_socktype, m_hints->ai_protocol);
   if (m_socket_fd == -1) {
-    throw SocketException(context, errno);
+    freeaddrinfo(m_hints);
+    throw SocketException(context, strerror(errno));
   }
 }
 
 net::TcpSocket::~TcpSocket() {
   if (m_socket_fd != -1) close(m_socket_fd);
+  if (m_hints != nullptr) freeaddrinfo(m_hints);
 }
 
 int net::TcpSocket::getHandle() const { return m_socket_fd; }

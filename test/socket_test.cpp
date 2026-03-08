@@ -5,11 +5,17 @@
 
 #include <memory>
 
-class SocketTest : public testing::Test {};
+using namespace testing;
 
-TEST_F(SocketTest, createsATcpClient) {
-  net::TcpSocket s("", "");
-  ASSERT_THAT(s.getHandle(), testing::Ne(-1));
-  ASSERT_THAT(s.getType(), testing::Ne(SOCK_STREAM));
-  ASSERT_THAT(s.getHandle(), testing::Ne(AF_INET));
+class SocketTest : public Test {};
+
+TEST_F(SocketTest, GivenInvalidInputWhenConstructsThenItThrows) {
+  ASSERT_THROW(net::TcpSocket s("", ""), net::SocketException);
+}
+
+TEST_F(SocketTest, GivenValidInputWhenConstructsThenSocketIsCreated) {
+  net::TcpSocket s("www.example.com", "80");
+  EXPECT_THAT(s.getHandle(), Ne(-1));
+  EXPECT_THAT(s.getType(), Eq(SOCK_STREAM));
+  EXPECT_THAT(s.getFamily(), Eq(AF_INET));
 }
