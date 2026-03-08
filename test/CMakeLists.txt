@@ -14,6 +14,7 @@ include(FetchContent)
 
 add_executable(utilities_test
   dummy_test.cpp
+  socket_test.cpp
 )
 
 target_include_directories(utilities_test PRIVATE ${CMAKE_SOURCE_DIR}/include)
