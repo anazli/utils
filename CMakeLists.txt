@@ -15,6 +15,8 @@ list(APPEND CMAKE_PREFIX_PATH "${CMAKE_BINARY_DIR}/build/${CMAKE_BUILD_TYPE}/gen
 add_library(utilities
 	include/networking/socket.h
 	src/networking/socket.cpp
+	include/networking/tcp_client.h
+	src/networking/tcp_client.cpp
 )
 
 target_include_directories(utilities
