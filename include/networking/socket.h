@@ -47,16 +47,6 @@ class TcpSocket {
    */
   int getFamily() const;
 
-  /*
-   * Binds the socket to a local address (for server usage)
-   */
-  void bind();
-
-  /*
-   * Accepts and listens to requests (for server usage)
-   */
-  void listenAndAccept() {};
-
  protected:
   addrinfo* m_address_info;
   int m_socket_fd;

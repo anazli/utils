@@ -46,17 +46,3 @@ int net::TcpSocket::getHandle() const { return m_socket_fd; }
 int net::TcpSocket::getType() const { return m_address_info->ai_socktype; }
 
 int net::TcpSocket::getFamily() const { return m_address_info->ai_family; }
-
-void net::TcpSocket::bind() {
-  if (::bind(m_socket_fd, m_address_info->ai_addr,
-             m_address_info->ai_addrlen) == -1) {
-    throw SocketException("[TcpSocket::bind]", strerror(errno));
-  }
-}
-
-void net::TcpSocket::connect() {
-  if (::connect(m_socket_fd, m_address_info->ai_addr,
-                m_address_info->ai_addrlen) == -1) {
-    throw SocketException("[TcpSocket::bind]", strerror(errno));
-  }
-}

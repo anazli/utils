@@ -24,19 +24,3 @@ TEST_F(SocketTest, GivenValidInputWhenConstructsThenSocketIsCreated) {
   EXPECT_THAT(s.getType(), Eq(SOCK_STREAM));
   EXPECT_THAT(s.getFamily(), Eq(AF_INET));
 }
-
-TEST_F(SocketTest, GivenValidSocketWhenItBindsToRemoteAddressThenItThrows) {
-  net::TcpSocket s(remote_ip.data(), test_port.data());
-  ASSERT_THROW(s.bind(), net::SocketException);
-}
-
-TEST_F(SocketTest,
-       GivenValidSocketWhenItBindsToLocalAddressThenItDoesNotThrow) {
-  net::TcpSocket s(local_ip.data(), test_port.data());
-  ASSERT_NO_THROW(s.bind());
-}
-
-TEST_F(SocketTest, GivenValidSocketWhenItConnectsToAnAddressThenItDoesNoThrow) {
-  net::TcpSocket s(remote_ip.data(), test_port.data());
-  ASSERT_NO_THROW(s.connect());
-}
