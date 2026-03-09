@@ -48,11 +48,6 @@ class TcpSocket {
   int getFamily() const;
 
   /*
-   * Connects the socket to the provided address (for client usage)
-   */
-  void connect();
-
-  /*
    * Binds the socket to a local address (for server usage)
    */
   void bind();
@@ -62,7 +57,7 @@ class TcpSocket {
    */
   void listenAndAccept() {};
 
- private:
+ protected:
   addrinfo* m_address_info;
   int m_socket_fd;
 };
