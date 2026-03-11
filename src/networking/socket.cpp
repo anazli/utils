@@ -45,6 +45,32 @@ net::TcpSocket::TcpSocket(const std::string& ip, const std::string& port)
   }
 }
 
+net::TcpSocket::TcpSocket(TcpSocket&& other)
+    : m_storage(other.m_storage),
+      m_len(other.m_len),
+      m_socket_fd(other.m_socket_fd),
+      m_family(other.m_family),
+      m_type(other.m_type),
+      m_protocol(other.m_protocol) {
+  other.m_socket_fd = -1;
+}
+
+net::TcpSocket& net::TcpSocket::operator=(TcpSocket&& other) {
+  if (this != &other) {
+    if (m_socket_fd != -1) ::close(m_socket_fd);
+
+    m_storage = other.m_storage;
+    m_len = other.m_len;
+    m_socket_fd = other.m_socket_fd;
+    m_family = other.m_family;
+    m_type = other.m_type;
+    m_protocol = other.m_protocol;
+
+    other.m_socket_fd = -1;
+  }
+  return *this;
+}
+
 net::TcpSocket::~TcpSocket() {
   if (m_socket_fd != -1) close(m_socket_fd);
 }

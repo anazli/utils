@@ -27,6 +27,12 @@ class TcpSocket {
    */
   TcpSocket(const std::string& ip, const std::string& port);
 
+  TcpSocket(const TcpSocket&) = delete;
+  TcpSocket& operator=(const TcpSocket&) = delete;
+
+  TcpSocket(TcpSocket&& other);
+  TcpSocket& operator=(TcpSocket&& other);
+
   /*
    * Closes the socket and frees all resources
    */
