@@ -21,5 +21,7 @@ TEST_F(TcpServerTest,
        GivenValidSocketWhenItBindsToALocalAddressThenItDoesNoThrow) {
   net::TcpServer s(local_ip.data(), test_port.data());
   auto new_server = std::move(s);
+
+  EXPECT_THAT(s.getHandle(), testing::Eq(-1));
   ASSERT_NO_THROW(new_server.bind());
 }

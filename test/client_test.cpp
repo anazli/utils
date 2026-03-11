@@ -22,5 +22,7 @@ TEST_F(TcpClientTest,
        GivenValidSocketWhenItConnectsToAnAddressThenItDoesNoThrow) {
   net::TcpClient c(remote_ip.data(), test_port.data());
   auto new_client = std::move(c);
+
+  EXPECT_THAT(c.getHandle(), testing::Eq(-1));
   ASSERT_NO_THROW(new_client.connect());
 }

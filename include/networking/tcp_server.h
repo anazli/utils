@@ -28,6 +28,11 @@ class TcpServer : public TcpSocket {
    */
   void bind();
 
+  /*
+   * Not able to call send or recv after this call
+   */
+  void listen(int backlog = SOMAXCONN);
+
  private:
 };
 
