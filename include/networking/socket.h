@@ -30,7 +30,7 @@ class TcpSocket {
   /*
    * Closes the socket and frees all resources
    */
-  ~TcpSocket();
+  virtual ~TcpSocket();
 
   /*
    * Returns the socket handle
@@ -48,8 +48,12 @@ class TcpSocket {
   int getFamily() const;
 
  protected:
-  addrinfo* m_address_info;
+  sockaddr_storage m_storage;
+  socklen_t m_len;
   int m_socket_fd;
+  int m_family;
+  int m_type;
+  int m_protocol;
 };
 
 }  // namespace net

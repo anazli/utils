@@ -15,9 +15,6 @@ class TcpServer : public TcpSocket {
    */
   TcpServer(const std::string& local_address, const std::string& port);
 
-  TcpServer(const TcpServer&) = delete;
-  TcpServer& operator=(const TcpServer&) = delete;
-
   /*
    * Binds the server to a local address
    */

@@ -15,9 +15,6 @@ class TcpClient : public TcpSocket {
    */
   TcpClient(const std::string& host, const std::string& port);
 
-  TcpClient(const TcpClient&) = delete;
-  TcpClient& operator=(const TcpClient&) = delete;
-
   /*
    * Connects the socket to the provided address during construction
    */

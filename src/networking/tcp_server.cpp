@@ -7,8 +7,8 @@ net::TcpServer::TcpServer(const std::string& local_address,
     : TcpSocket(local_address, port) {}
 
 void net::TcpServer::bind() {
-  if (::bind(m_socket_fd, m_address_info->ai_addr,
-             m_address_info->ai_addrlen) == -1) {
+  if (::bind(m_socket_fd, reinterpret_cast<sockaddr*>(&m_storage), m_len) ==
+      -1) {
     throw SocketException("[TcpSocket::bind]", strerror(errno));
   }
 }
