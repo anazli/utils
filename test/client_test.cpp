@@ -20,6 +20,6 @@ TEST_F(TcpClientTest, GivenValidInputWhenCreatedThenItIsValid) {
 
 TEST_F(TcpClientTest,
        GivenValidSocketWhenItConnectsToAnAddressThenItDoesNoThrow) {
-  net::TcpClient s(remote_ip.data(), test_port.data());
-  ASSERT_NO_THROW(s.connect());
+  net::TcpClient c(remote_ip.data(), test_port.data());
+  ASSERT_NO_THROW(c.connect());
 }
