@@ -20,8 +20,8 @@ class TcpClient : public TcpSocket {
   TcpClient(const TcpClient&) = delete;
   TcpClient& operator=(TcpClient&) = delete;
 
-  TcpClient(TcpClient&& other) = default;
-  TcpClient& operator=(TcpClient&& other) = default;
+  TcpClient(TcpClient&& other) noexcept = default;
+  TcpClient& operator=(TcpClient&& other) noexcept = default;
 
   ~TcpClient() override = default;
 

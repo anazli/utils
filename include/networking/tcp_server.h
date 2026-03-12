@@ -19,8 +19,8 @@ class TcpServer : public TcpSocket {
   TcpServer(const TcpServer&) = delete;
   TcpServer& operator=(const TcpServer&) = delete;
 
-  TcpServer(TcpServer&& other) = default;
-  TcpServer& operator=(TcpServer&& other) = default;
+  TcpServer(TcpServer&& other) noexcept = default;
+  TcpServer& operator=(TcpServer&& other) noexcept = default;
 
   ~TcpServer() override = default;
 

@@ -5,6 +5,7 @@
 
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 namespace net {
 
@@ -16,6 +17,22 @@ class SocketException : public std::runtime_error {
 
  private:
   std::string m_context;
+};
+
+class DataPacket {
+ public:
+  DataPacket() = default;
+  explicit DataPacket(size_t size);
+  DataPacket(const uint8_t* data, size_t len);
+  DataPacket(std::initializer_list<uint8_t> list);
+
+  void insert(const uint8_t* data, size_t len);
+  const uint8_t* data() const;
+  size_t size() const;
+  void clear();
+
+ private:
+  std::vector<uint8_t> m_buffer;
 };
 
 // A TCP Socket for client/server communication
@@ -32,8 +49,8 @@ class TcpSocket {
   TcpSocket(const TcpSocket&) = delete;
   TcpSocket& operator=(const TcpSocket&) = delete;
 
-  TcpSocket(TcpSocket&& other);
-  TcpSocket& operator=(TcpSocket&& other);
+  TcpSocket(TcpSocket&& other) noexcept;
+  TcpSocket& operator=(TcpSocket&& other) noexcept;
 
   /*
    * Closes the socket and frees all resources

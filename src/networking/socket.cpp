@@ -4,6 +4,12 @@
 
 #include <cstring>
 
+/***************************************************************
+ *
+ * SocketException
+ *
+ ***************************************************************/
+
 net::SocketException::SocketException(const std::string& context,
                                       const std::string& error)
     : std::runtime_error("Socket Error: "), m_context(context) {
@@ -13,6 +19,37 @@ net::SocketException::SocketException(const std::string& context,
 const char* net::SocketException::what() const noexcept {
   return m_context.c_str();
 }
+
+/***************************************************************
+ *
+ * DataPacket
+ *
+ ***************************************************************/
+
+net::DataPacket::DataPacket(size_t size) : m_buffer(size) {}
+
+net::DataPacket::DataPacket(const uint8_t* data, size_t len) {
+  m_buffer.insert(m_buffer.end(), data, data + len);
+}
+
+net::DataPacket::DataPacket(std::initializer_list<uint8_t> list)
+    : m_buffer(list) {}
+
+void net::DataPacket::insert(const uint8_t* data, size_t len) {
+  m_buffer.insert(m_buffer.end(), data, data + len);
+}
+
+const uint8_t* net::DataPacket::data() const { return m_buffer.data(); }
+
+size_t net::DataPacket::size() const { return m_buffer.size(); }
+
+void net::DataPacket::clear() { m_buffer.clear(); }
+
+/***************************************************************
+ *
+ * TcpSocket
+ *
+ ***************************************************************/
 
 net::TcpSocket::TcpSocket(const std::string& ip, const std::string& port)
     : m_len(sizeof(m_storage)),
@@ -48,7 +85,7 @@ net::TcpSocket::TcpSocket(const std::string& ip, const std::string& port)
   configureDualStack();
 }
 
-net::TcpSocket::TcpSocket(TcpSocket&& other)
+net::TcpSocket::TcpSocket(TcpSocket&& other) noexcept
     : m_storage(other.m_storage),
       m_len(other.m_len),
       m_socket_fd(other.m_socket_fd),
@@ -58,7 +95,7 @@ net::TcpSocket::TcpSocket(TcpSocket&& other)
   other.m_socket_fd = -1;
 }
 
-net::TcpSocket& net::TcpSocket::operator=(TcpSocket&& other) {
+net::TcpSocket& net::TcpSocket::operator=(TcpSocket&& other) noexcept {
   if (this != &other) {
     if (m_socket_fd != -1) ::close(m_socket_fd);
 
