@@ -42,13 +42,14 @@ class DataStream {
 // A TCP Socket for client/server communication
 class TcpSocket {
  public:
+  enum SocketType { TCP = SOCK_STREAM, UDP = SOCK_DGRAM };
   /*
    * Creates a socket for the given ip and port number
    * @param ip IP address or hostname to resolve
    * @param port Port number as string
    * @throws SocketException if address resolution or socket creation fails
    */
-  TcpSocket(const std::string& ip, const std::string& port);
+  TcpSocket(const std::string& ip, const std::string& port, SocketType type);
 
   TcpSocket(const TcpSocket&) = delete;
   TcpSocket& operator=(const TcpSocket&) = delete;
@@ -60,26 +61,6 @@ class TcpSocket {
    * Closes the socket and frees all resources
    */
   virtual ~TcpSocket();
-
-  /*
-   * Sends message to the connected endpoint
-   * @param message The message to send
-   * @param flags Flags for the system call
-   * @return The number of bytes sent if result > 0
-   * if interrupted return equals to 0
-   * throws SocketException otherwise
-   */
-  ssize_t send(const DataStream& message, int flags = 0);
-
-  /*
-   * Receives message from the connected endpoint
-   * @param message The message to receive (space must already be allocated)
-   * @param flags Flags for the system call
-   * @return The number of bytes received if result > 0
-   * if connection closed return equals to 0
-   * throws SocketException if message buffer is empty or if result < 0
-   */
-  ssize_t recv(DataStream& message, int flags = 0);
 
   /*
    * Returns the socket handle

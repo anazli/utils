@@ -68,10 +68,11 @@ std::string net::DataStream::toString() const {
  *
  ***************************************************************/
 
-net::TcpSocket::TcpSocket(const std::string& ip, const std::string& port)
+net::TcpSocket::TcpSocket(const std::string& ip, const std::string& port,
+                          SocketType type)
     : m_len(sizeof(m_storage)),
       m_family(AF_INET6),
-      m_type(SOCK_STREAM),
+      m_type(type),
       m_protocol(6) {
   std::memset(&m_storage, 0, m_len);
 
@@ -130,35 +131,6 @@ net::TcpSocket& net::TcpSocket::operator=(TcpSocket&& other) noexcept {
 
 net::TcpSocket::~TcpSocket() {
   if (m_socket_fd != -1) close(m_socket_fd);
-}
-
-ssize_t net::TcpSocket::send(const DataStream& message, int flags) {
-  auto bytes_sent = ::send(m_socket_fd, message.data(), message.size(), flags);
-  if (bytes_sent == -1) {
-    if (errno == EINTR) {
-      return 0;
-    }
-    throw SocketException("[TcpSocket::send]", strerror(errno));
-  }
-  return bytes_sent;
-}
-
-ssize_t net::TcpSocket::recv(DataStream& message, int flags) {
-  if (message.size() == 0) {
-    throw SocketException("[TcpSocket::recv]", "message size buffer is empty");
-  }
-  auto bytes_received =
-      ::recv(m_socket_fd, message.data(), message.size(), flags);
-
-  if (bytes_received > 0) {
-    message.resize(bytes_received);
-  } else if (bytes_received == 0) {
-    message.clear();
-    return 0;
-  } else {
-    throw SocketException("[TcpSocket::recv]", strerror(errno));
-  }
-  return bytes_received;
 }
 
 int net::TcpSocket::getHandle() const { return m_socket_fd; }

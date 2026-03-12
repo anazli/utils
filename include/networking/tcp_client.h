@@ -30,6 +30,26 @@ class TcpClient : public TcpSocket {
    */
   void connect();
 
+  /*
+   * Sends message to the connected endpoint
+   * @param message The message to send
+   * @param flags Flags for the system call
+   * @return The number of bytes sent if result > 0
+   * if interrupted return equals to 0
+   * throws SocketException otherwise
+   */
+  ssize_t send(const DataStream& message, int flags = 0);
+
+  /*
+   * Receives message from the connected endpoint
+   * @param message The message to receive (space must already be allocated)
+   * @param flags Flags for the system call
+   * @return The number of bytes received if result > 0
+   * if connection closed return equals to 0
+   * throws SocketException if message buffer is empty or if result < 0
+   */
+  ssize_t recv(DataStream& message, int flags = 0);
+
  private:
 };
 
