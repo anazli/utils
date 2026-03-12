@@ -16,7 +16,18 @@ void net::TcpServer::bind() {
 }
 
 void net::TcpServer::listen(int backlog) {
-  if (::listen(m_socket_fd, backlog) < 0) {
+  if (::listen(m_socket_fd, backlog) == -1) {
     throw SocketException("[TcpSocket::listen]", strerror(errno));
   }
+}
+
+net::TcpClient net::TcpServer::accept() {
+  sockaddr_storage client_addr;
+  socklen_t client_len = sizeof(client_addr);
+
+  // blocking call
+  int new_client = ::accept(
+      m_socket_fd, reinterpret_cast<sockaddr*>(&client_addr), &client_len);
+
+  return TcpClient(new_client, client_addr, client_len);
 }

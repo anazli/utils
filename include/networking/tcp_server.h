@@ -1,6 +1,7 @@
 #pragma once
 
 #include "socket.h"
+#include "tcp_client.h"
 
 namespace net {
 
@@ -32,6 +33,8 @@ class TcpServer : public TcpSocket {
    * Not able to call send or recv after this call
    */
   void listen(int backlog = SOMAXCONN);
+
+  TcpClient accept();
 
  private:
 };

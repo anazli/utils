@@ -1,3 +1,5 @@
+#pragma once
+
 #include <netdb.h>
 #include <sys/socket.h>
 
@@ -54,6 +56,8 @@ class TcpSocket {
   int getFamily() const;
 
  protected:
+  TcpSocket(int existing_fd, sockaddr_storage addr, socklen_t len);
+
   sockaddr_storage m_storage;
   socklen_t m_len;
   int m_socket_fd;

@@ -14,6 +14,7 @@ class TcpClient : public TcpSocket {
    * @throws SocketException if address resolution or socket creation fails
    */
   TcpClient(const std::string& host, const std::string& port);
+  TcpClient(int existing_fd, sockaddr_storage addr, socklen_t len);
 
   TcpClient(const TcpClient&) = delete;
   TcpClient& operator=(TcpClient&) = delete;

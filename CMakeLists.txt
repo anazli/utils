@@ -19,6 +19,7 @@ add_library(utilities
 	src/networking/tcp_client.cpp
 	include/networking/tcp_server.h
 	src/networking/tcp_server.cpp
+	src/main/main.cpp
 )
 
 target_include_directories(utilities

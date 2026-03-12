@@ -80,3 +80,11 @@ int net::TcpSocket::getHandle() const { return m_socket_fd; }
 int net::TcpSocket::getType() const { return m_type; }
 
 int net::TcpSocket::getFamily() const { return m_family; }
+
+net::TcpSocket::TcpSocket(int existing_fd, sockaddr_storage addr, socklen_t len)
+    : m_socket_fd(existing_fd),
+      m_storage(addr),
+      m_len(len),
+      m_family(AF_INET),
+      m_type(SOCK_STREAM),
+      m_protocol(0) {}
