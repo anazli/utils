@@ -41,9 +41,13 @@ void net::DataPacket::insert(const uint8_t* data, size_t len) {
 
 const uint8_t* net::DataPacket::data() const { return m_buffer.data(); }
 
+uint8_t* net::DataPacket::data() { return m_buffer.data(); }
+
 size_t net::DataPacket::size() const { return m_buffer.size(); }
 
 void net::DataPacket::clear() { m_buffer.clear(); }
+
+void net::DataPacket::resize(size_t size) { m_buffer.resize(size); }
 
 /***************************************************************
  *
@@ -113,6 +117,35 @@ net::TcpSocket& net::TcpSocket::operator=(TcpSocket&& other) noexcept {
 
 net::TcpSocket::~TcpSocket() {
   if (m_socket_fd != -1) close(m_socket_fd);
+}
+
+ssize_t net::TcpSocket::send(const DataPacket& message, int flags) {
+  auto bytes_sent = ::send(m_socket_fd, message.data(), message.size(), flags);
+  if (bytes_sent == -1) {
+    if (errno == EINTR) {
+      return 0;
+    }
+    throw SocketException("[TcpSocket::send]", strerror(errno));
+  }
+  return bytes_sent;
+}
+
+ssize_t net::TcpSocket::recv(DataPacket& message, int flags) {
+  if (message.size() == 0) {
+    throw SocketException("[TcpSocket::recv]", "message size buffer is empty");
+  }
+  auto bytes_received =
+      ::recv(m_socket_fd, message.data(), message.size(), flags);
+
+  if (bytes_received > 0) {
+    message.resize(bytes_received);
+  } else if (bytes_received == 0) {
+    message.clear();
+    return 0;
+  } else {
+    throw SocketException("[TcpSocket::recv]", strerror(errno));
+  }
+  return bytes_received;
 }
 
 int net::TcpSocket::getHandle() const { return m_socket_fd; }

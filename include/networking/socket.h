@@ -28,8 +28,10 @@ class DataPacket {
 
   void insert(const uint8_t* data, size_t len);
   const uint8_t* data() const;
+  uint8_t* data();
   size_t size() const;
   void clear();
+  void resize(size_t size);
 
  private:
   std::vector<uint8_t> m_buffer;
@@ -56,6 +58,26 @@ class TcpSocket {
    * Closes the socket and frees all resources
    */
   virtual ~TcpSocket();
+
+  /*
+   * Sends message to the connected endpoint
+   * @param message The message to send
+   * @param flags Flags for the system call
+   * @return The number of bytes sent if result > 0
+   * if interrupted return equals to 0
+   * throws SocketException otherwise
+   */
+  ssize_t send(const DataPacket& message, int flags = 0);
+
+  /*
+   * Receives message from the connected endpoint
+   * @param message The message to receive (space must already be allocated)
+   * @param flags Flags for the system call
+   * @return The number of bytes received if result > 0
+   * if connection closed return equals to 0
+   * throws SocketException if message buffer is empty or if result < 0
+   */
+  ssize_t recv(DataPacket& message, int flags = 0);
 
   /*
    * Returns the socket handle
