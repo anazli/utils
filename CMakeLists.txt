@@ -28,6 +28,12 @@ target_include_directories(utilities
 		$<INSTALL_INTERFACE:include>
 )
 
+add_executable(main src/main/main.cpp)
+target_include_directories(main PUBLIC
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+)
+target_link_libraries(main PRIVATE utilities)
+
 if(ENABLE_TESTING)
 	enable_testing()
 	add_subdirectory(test)
