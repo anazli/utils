@@ -46,7 +46,7 @@ TEST_F(TcpServerTest,
   remote_client.connect();
   t.join();
 
-  EXPECT_THAT(remote_client.getFamily(),
-              testing::Eq(accepted_peer.getFamily()));
-  EXPECT_THAT(remote_client.getType(), testing::Eq(accepted_peer.getType()));
+  EXPECT_THAT(remote_client.getFamily(), Eq(accepted_peer.getFamily()));
+  EXPECT_THAT(remote_client.getType(), Eq(accepted_peer.getType()));
+  EXPECT_THAT(remote_client.getProtocol(), Eq(accepted_peer.getProtocol()));
 }

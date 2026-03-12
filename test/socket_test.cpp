@@ -23,4 +23,5 @@ TEST_F(SocketTest, GivenValidInputWhenConstructsThenSocketIsCreated) {
   EXPECT_THAT(s.getHandle(), Ne(-1));
   EXPECT_THAT(s.getType(), Eq(SOCK_STREAM));
   EXPECT_THAT(s.getFamily(), Eq(AF_INET6));
+  EXPECT_THAT(s.getProtocol(), Eq(6));
 }

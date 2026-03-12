@@ -18,7 +18,7 @@ net::TcpSocket::TcpSocket(const std::string& ip, const std::string& port)
     : m_len(sizeof(m_storage)),
       m_family(AF_INET6),
       m_type(SOCK_STREAM),
-      m_protocol(0) {
+      m_protocol(6) {
   std::memset(&m_storage, 0, m_len);
 
   addrinfo hints;
@@ -83,6 +83,8 @@ int net::TcpSocket::getHandle() const { return m_socket_fd; }
 int net::TcpSocket::getType() const { return m_type; }
 
 int net::TcpSocket::getFamily() const { return m_family; }
+
+int net::TcpSocket::getProtocol() const { return m_protocol; }
 
 net::TcpSocket::TcpSocket(int existing_fd, sockaddr_storage addr, socklen_t len)
     : m_socket_fd(existing_fd),

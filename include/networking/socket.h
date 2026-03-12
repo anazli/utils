@@ -50,10 +50,16 @@ class TcpSocket {
    */
 
   int getType() const;
+
   /*
-   * Returns the socket family/domain (IPv4 for the moment)
+   * Returns the socket family/domain
    */
   int getFamily() const;
+
+  /*
+   * Returns the socket Protocol (/etc/protocols, i.e 6=TCP)
+   */
+  int getProtocol() const;
 
  protected:
   TcpSocket() = default;
