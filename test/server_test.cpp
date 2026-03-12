@@ -40,11 +40,11 @@ TEST_F(TcpServerTest,
   net::TcpClient accepted_peer;
   std::thread t([&accepted_peer, &server, &server_msg] {
     try {
-      net::DataPacket received(1024);
+      net::DataStream received(1024);
       accepted_peer = server.accept();
       accepted_peer.recv(received);
 
-      net::DataPacket msg_to_send;
+      net::DataStream msg_to_send;
       msg_to_send.append(server_msg).append(received.data(), received.size());
       accepted_peer.send(msg_to_send);
 
@@ -55,11 +55,11 @@ TEST_F(TcpServerTest,
   auto remote_client = net::TcpClient(local_ip.data(), test_port.data());
   remote_client.connect();
 
-  net::DataPacket client_packet;
+  net::DataStream client_packet;
   client_packet.append(client_msg);
   remote_client.send(client_packet);
 
-  net::DataPacket result_msg(1024);
+  net::DataStream result_msg(1024);
   remote_client.recv(result_msg);
 
   t.join();

@@ -26,37 +26,37 @@ const char* net::SocketException::what() const noexcept {
  *
  ***************************************************************/
 
-net::DataPacket::DataPacket(size_t size) : m_buffer(size) {}
+net::DataStream::DataStream(size_t size) : m_buffer(size) {}
 
-net::DataPacket::DataPacket(const uint8_t* data, size_t len) {
+net::DataStream::DataStream(const uint8_t* data, size_t len) {
   m_buffer.insert(m_buffer.end(), data, data + len);
 }
 
-net::DataPacket::DataPacket(std::initializer_list<uint8_t> list)
+net::DataStream::DataStream(std::initializer_list<uint8_t> list)
     : m_buffer(list) {}
 
-net::DataPacket& net::DataPacket::append(const uint8_t* data, size_t len) {
+net::DataStream& net::DataStream::append(const uint8_t* data, size_t len) {
   m_buffer.insert(m_buffer.end(), data, data + len);
   return *this;
 }
 
-net::DataPacket& net::DataPacket::append(const std::string& data) {
+net::DataStream& net::DataStream::append(const std::string& data) {
   const uint8_t* raw_data = reinterpret_cast<const uint8_t*>(data.data());
   append(raw_data, data.size());
   return *this;
 }
 
-const uint8_t* net::DataPacket::data() const { return m_buffer.data(); }
+const uint8_t* net::DataStream::data() const { return m_buffer.data(); }
 
-uint8_t* net::DataPacket::data() { return m_buffer.data(); }
+uint8_t* net::DataStream::data() { return m_buffer.data(); }
 
-size_t net::DataPacket::size() const { return m_buffer.size(); }
+size_t net::DataStream::size() const { return m_buffer.size(); }
 
-void net::DataPacket::clear() { m_buffer.clear(); }
+void net::DataStream::clear() { m_buffer.clear(); }
 
-void net::DataPacket::resize(size_t size) { m_buffer.resize(size); }
+void net::DataStream::resize(size_t size) { m_buffer.resize(size); }
 
-std::string net::DataPacket::toString() const {
+std::string net::DataStream::toString() const {
   auto d = data();
   auto s = size();
   return std::string(reinterpret_cast<const char*>(d), s);
@@ -132,7 +132,7 @@ net::TcpSocket::~TcpSocket() {
   if (m_socket_fd != -1) close(m_socket_fd);
 }
 
-ssize_t net::TcpSocket::send(const DataPacket& message, int flags) {
+ssize_t net::TcpSocket::send(const DataStream& message, int flags) {
   auto bytes_sent = ::send(m_socket_fd, message.data(), message.size(), flags);
   if (bytes_sent == -1) {
     if (errno == EINTR) {
@@ -143,7 +143,7 @@ ssize_t net::TcpSocket::send(const DataPacket& message, int flags) {
   return bytes_sent;
 }
 
-ssize_t net::TcpSocket::recv(DataPacket& message, int flags) {
+ssize_t net::TcpSocket::recv(DataStream& message, int flags) {
   if (message.size() == 0) {
     throw SocketException("[TcpSocket::recv]", "message size buffer is empty");
   }

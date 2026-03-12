@@ -7,7 +7,7 @@
 int main() {
   try {
     net::TcpClient client("localhost", "8080");
-    net::DataPacket msg_to_send;
+    net::DataStream msg_to_send;
     msg_to_send.append("Howdy, TCP Server");
 
     std::cout << "Client connects to the server.." << std::endl;
@@ -17,7 +17,7 @@ int main() {
     client.send(msg_to_send);
 
     std::cout << "Client receives message from the server.." << std::endl;
-    net::DataPacket received_msg(1024);
+    net::DataStream received_msg(1024);
     client.recv(received_msg);
 
     std::cout << "Succesfully received from server: " << received_msg.toString()

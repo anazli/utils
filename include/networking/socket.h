@@ -19,15 +19,15 @@ class SocketException : public std::runtime_error {
   std::string m_context;
 };
 
-class DataPacket {
+class DataStream {
  public:
-  DataPacket() = default;
-  explicit DataPacket(size_t size);
-  DataPacket(const uint8_t* data, size_t len);
-  DataPacket(std::initializer_list<uint8_t> list);
+  DataStream() = default;
+  explicit DataStream(size_t size);
+  DataStream(const uint8_t* data, size_t len);
+  DataStream(std::initializer_list<uint8_t> list);
 
-  DataPacket& append(const uint8_t* data, size_t len);
-  DataPacket& append(const std::string& data);
+  DataStream& append(const uint8_t* data, size_t len);
+  DataStream& append(const std::string& data);
   const uint8_t* data() const;
   uint8_t* data();
   size_t size() const;
@@ -69,7 +69,7 @@ class TcpSocket {
    * if interrupted return equals to 0
    * throws SocketException otherwise
    */
-  ssize_t send(const DataPacket& message, int flags = 0);
+  ssize_t send(const DataStream& message, int flags = 0);
 
   /*
    * Receives message from the connected endpoint
@@ -79,7 +79,7 @@ class TcpSocket {
    * if connection closed return equals to 0
    * throws SocketException if message buffer is empty or if result < 0
    */
-  ssize_t recv(DataPacket& message, int flags = 0);
+  ssize_t recv(DataStream& message, int flags = 0);
 
   /*
    * Returns the socket handle
