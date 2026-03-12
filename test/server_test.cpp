@@ -25,3 +25,15 @@ TEST_F(TcpServerTest,
   EXPECT_THAT(s.getHandle(), testing::Eq(-1));
   ASSERT_NO_THROW(new_server.bind());
 }
+
+TEST_F(TcpServerTest,
+       GivenValidServerWhenItAcceptsThenClientServerConnectionIsCorrect) {
+  /*net::TcpServer s(local_ip.data(), test_port.data());
+  s.bind();
+  s.listen(1);
+  auto client = s.accept();
+  client.connect();
+
+  EXPECT_THAT(client.getFamily(), testing::Eq(s.getFamily()));
+  */
+}

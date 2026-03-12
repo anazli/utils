@@ -58,6 +58,8 @@ class TcpSocket {
  protected:
   TcpSocket(int existing_fd, sockaddr_storage addr, socklen_t len);
 
+  void configureDualStack();
+
   sockaddr_storage m_storage;
   socklen_t m_len;
   int m_socket_fd;

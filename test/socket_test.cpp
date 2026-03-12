@@ -22,5 +22,5 @@ TEST_F(SocketTest, GivenValidInputWhenConstructsThenSocketIsCreated) {
   net::TcpSocket s(remote_ip.data(), test_port.data());
   EXPECT_THAT(s.getHandle(), Ne(-1));
   EXPECT_THAT(s.getType(), Eq(SOCK_STREAM));
-  EXPECT_THAT(s.getFamily(), Eq(AF_INET));
+  EXPECT_THAT(s.getFamily(), Eq(AF_INET6));
 }
