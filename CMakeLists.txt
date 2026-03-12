@@ -19,7 +19,7 @@ add_library(utilities
 	src/networking/tcp_client.cpp
 	include/networking/tcp_server.h
 	src/networking/tcp_server.cpp
-	src/main/main.cpp
+	src/main/server.cpp
 )
 
 target_include_directories(utilities
@@ -28,11 +28,17 @@ target_include_directories(utilities
 		$<INSTALL_INTERFACE:include>
 )
 
-add_executable(main src/main/main.cpp)
-target_include_directories(main PUBLIC
+add_executable(server src/main/server.cpp)
+target_include_directories(server PUBLIC
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
-target_link_libraries(main PRIVATE utilities)
+target_link_libraries(server PRIVATE utilities)
+
+add_executable(client src/main/client.cpp)
+target_include_directories(client PUBLIC
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+)
+target_link_libraries(client PRIVATE utilities)
 
 if(ENABLE_TESTING)
 	enable_testing()
