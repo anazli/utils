@@ -26,12 +26,14 @@ class DataPacket {
   DataPacket(const uint8_t* data, size_t len);
   DataPacket(std::initializer_list<uint8_t> list);
 
-  void insert(const uint8_t* data, size_t len);
+  DataPacket& append(const uint8_t* data, size_t len);
+  DataPacket& append(const std::string& data);
   const uint8_t* data() const;
   uint8_t* data();
   size_t size() const;
   void clear();
   void resize(size_t size);
+  std::string toString() const;
 
  private:
   std::vector<uint8_t> m_buffer;

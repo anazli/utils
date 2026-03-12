@@ -35,8 +35,15 @@ net::DataPacket::DataPacket(const uint8_t* data, size_t len) {
 net::DataPacket::DataPacket(std::initializer_list<uint8_t> list)
     : m_buffer(list) {}
 
-void net::DataPacket::insert(const uint8_t* data, size_t len) {
+net::DataPacket& net::DataPacket::append(const uint8_t* data, size_t len) {
   m_buffer.insert(m_buffer.end(), data, data + len);
+  return *this;
+}
+
+net::DataPacket& net::DataPacket::append(const std::string& data) {
+  const uint8_t* raw_data = reinterpret_cast<const uint8_t*>(data.data());
+  append(raw_data, data.size());
+  return *this;
 }
 
 const uint8_t* net::DataPacket::data() const { return m_buffer.data(); }
@@ -48,6 +55,12 @@ size_t net::DataPacket::size() const { return m_buffer.size(); }
 void net::DataPacket::clear() { m_buffer.clear(); }
 
 void net::DataPacket::resize(size_t size) { m_buffer.resize(size); }
+
+std::string net::DataPacket::toString() const {
+  auto d = data();
+  auto s = size();
+  return std::string(reinterpret_cast<const char*>(d), s);
+}
 
 /***************************************************************
  *

@@ -30,23 +30,42 @@ TEST_F(TcpServerTest,
 
 TEST_F(TcpServerTest,
        GivenValidServerWhenItAcceptsThenClientServerConnectionIsCorrect) {
-  net::TcpServer s(local_ip.data(), test_port.data());
-  s.bind();
-  s.listen(1);
+  std::string server_msg("Hello Client! You sent me:");
+  std::string client_msg("Howdy, TCP Server!");
+
+  net::TcpServer server(local_ip.data(), test_port.data());
+  server.bind();
+  server.listen(1);
 
   net::TcpClient accepted_peer;
-  std::thread t([&accepted_peer, &s] {
+  std::thread t([&accepted_peer, &server, &server_msg] {
     try {
-      accepted_peer = s.accept();
+      net::DataPacket received(1024);
+      accepted_peer = server.accept();
+      accepted_peer.recv(received);
+
+      net::DataPacket msg_to_send;
+      msg_to_send.append(server_msg).append(received.data(), received.size());
+      accepted_peer.send(msg_to_send);
+
     } catch (const net::SocketException& e) {
     }
   });
 
   auto remote_client = net::TcpClient(local_ip.data(), test_port.data());
   remote_client.connect();
+
+  net::DataPacket client_packet;
+  client_packet.append(client_msg);
+  remote_client.send(client_packet);
+
+  net::DataPacket result_msg(1024);
+  remote_client.recv(result_msg);
+
   t.join();
 
   EXPECT_THAT(remote_client.getFamily(), Eq(accepted_peer.getFamily()));
   EXPECT_THAT(remote_client.getType(), Eq(accepted_peer.getType()));
   EXPECT_THAT(remote_client.getProtocol(), Eq(accepted_peer.getProtocol()));
+  EXPECT_THAT(result_msg.toString(), Eq(server_msg + client_msg));
 }
