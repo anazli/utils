@@ -1,7 +1,9 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <future>
 #include <memory>
+#include <thread>
 
 #include "networking/tcp_server.h"
 
@@ -28,12 +30,23 @@ TEST_F(TcpServerTest,
 
 TEST_F(TcpServerTest,
        GivenValidServerWhenItAcceptsThenClientServerConnectionIsCorrect) {
-  /*net::TcpServer s(local_ip.data(), test_port.data());
+  net::TcpServer s(local_ip.data(), test_port.data());
   s.bind();
   s.listen(1);
-  auto client = s.accept();
-  client.connect();
 
-  EXPECT_THAT(client.getFamily(), testing::Eq(s.getFamily()));
-  */
+  net::TcpClient accepted_peer;
+  std::thread t([&accepted_peer, &s] {
+    try {
+      accepted_peer = s.accept();
+    } catch (const net::SocketException& e) {
+    }
+  });
+
+  auto remote_client = net::TcpClient(local_ip.data(), test_port.data());
+  remote_client.connect();
+  t.join();
+
+  EXPECT_THAT(remote_client.getFamily(),
+              testing::Eq(accepted_peer.getFamily()));
+  EXPECT_THAT(remote_client.getType(), testing::Eq(accepted_peer.getType()));
 }

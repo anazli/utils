@@ -56,6 +56,7 @@ class TcpSocket {
   int getFamily() const;
 
  protected:
+  TcpSocket() = default;
   TcpSocket(int existing_fd, sockaddr_storage addr, socklen_t len);
 
   void configureDualStack();

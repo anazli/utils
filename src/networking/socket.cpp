@@ -85,7 +85,20 @@ int net::TcpSocket::getType() const { return m_type; }
 int net::TcpSocket::getFamily() const { return m_family; }
 
 net::TcpSocket::TcpSocket(int existing_fd, sockaddr_storage addr, socklen_t len)
-    : m_socket_fd(existing_fd), m_storage(addr), m_len(len) {}
+    : m_socket_fd(existing_fd),
+      m_storage(addr),
+      m_len(len),
+      m_family(addr.ss_family) {
+  int type;
+  socklen_t type_len = sizeof(type);
+  getsockopt(m_socket_fd, SOL_SOCKET, SO_TYPE, &type, &type_len);
+  m_type = type;
+
+  int protocol;
+  socklen_t prot_len = sizeof(protocol);
+  getsockopt(m_socket_fd, SOL_SOCKET, SO_PROTOCOL, &protocol, &prot_len);
+  m_protocol = protocol;
+}
 
 void net::TcpSocket::configureDualStack() {
   auto context = std::string("[TcpSocket::configureDualStack] ");

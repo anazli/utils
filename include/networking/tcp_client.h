@@ -6,6 +6,7 @@ namespace net {
 
 class TcpClient : public TcpSocket {
  public:
+  TcpClient() = default;
   /*
    * Creates a TCP Client for the given host address and port number
    * to connect to
