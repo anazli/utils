@@ -4,7 +4,7 @@
 
 net::TcpServer::TcpServer(const std::string& local_address,
                           const std::string& port)
-    : TcpSocket(local_address, port, net::TcpSocket::TCP) {}
+    : Socket(local_address, port, net::Socket::TCP) {}
 
 void net::TcpServer::bind() {
   int opt = 1;  // prevent address already in use after restart

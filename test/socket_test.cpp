@@ -15,12 +15,11 @@ class SocketTest : public Test {
 };
 
 TEST_F(SocketTest, GivenInvalidInputWhenConstructsThenItThrows) {
-  ASSERT_THROW(net::TcpSocket s("", "", net::TcpSocket::TCP),
-               net::SocketException);
+  ASSERT_THROW(net::Socket s("", "", net::Socket::TCP), net::SocketException);
 }
 
 TEST_F(SocketTest, GivenValidInputWhenConstructsThenSocketIsCreated) {
-  net::TcpSocket s(remote_ip.data(), test_port.data(), net::TcpSocket::TCP);
+  net::Socket s(remote_ip.data(), test_port.data(), net::Socket::TCP);
   EXPECT_THAT(s.getHandle(), Ne(-1));
   EXPECT_THAT(s.getType(), Eq(SOCK_STREAM));
   EXPECT_THAT(s.getFamily(), Eq(AF_INET6));

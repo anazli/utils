@@ -68,8 +68,8 @@ std::string net::DataStream::toString() const {
  *
  ***************************************************************/
 
-net::TcpSocket::TcpSocket(const std::string& ip, const std::string& port,
-                          SocketType type)
+net::Socket::Socket(const std::string& ip, const std::string& port,
+                    SocketType type)
     : m_len(sizeof(m_storage)),
       m_family(AF_INET6),
       m_type(type),
@@ -103,7 +103,7 @@ net::TcpSocket::TcpSocket(const std::string& ip, const std::string& port,
   configureDualStack();
 }
 
-net::TcpSocket::TcpSocket(TcpSocket&& other) noexcept
+net::Socket::Socket(Socket&& other) noexcept
     : m_storage(other.m_storage),
       m_len(other.m_len),
       m_socket_fd(other.m_socket_fd),
@@ -113,7 +113,7 @@ net::TcpSocket::TcpSocket(TcpSocket&& other) noexcept
   other.m_socket_fd = -1;
 }
 
-net::TcpSocket& net::TcpSocket::operator=(TcpSocket&& other) noexcept {
+net::Socket& net::Socket::operator=(Socket&& other) noexcept {
   if (this != &other) {
     if (m_socket_fd != -1) ::close(m_socket_fd);
 
@@ -129,19 +129,19 @@ net::TcpSocket& net::TcpSocket::operator=(TcpSocket&& other) noexcept {
   return *this;
 }
 
-net::TcpSocket::~TcpSocket() {
+net::Socket::~Socket() {
   if (m_socket_fd != -1) close(m_socket_fd);
 }
 
-int net::TcpSocket::getHandle() const { return m_socket_fd; }
+int net::Socket::getHandle() const { return m_socket_fd; }
 
-int net::TcpSocket::getType() const { return m_type; }
+int net::Socket::getType() const { return m_type; }
 
-int net::TcpSocket::getFamily() const { return m_family; }
+int net::Socket::getFamily() const { return m_family; }
 
-int net::TcpSocket::getProtocol() const { return m_protocol; }
+int net::Socket::getProtocol() const { return m_protocol; }
 
-net::TcpSocket::TcpSocket(int existing_fd, sockaddr_storage addr, socklen_t len)
+net::Socket::Socket(int existing_fd, sockaddr_storage addr, socklen_t len)
     : m_socket_fd(existing_fd),
       m_storage(addr),
       m_len(len),
@@ -157,7 +157,7 @@ net::TcpSocket::TcpSocket(int existing_fd, sockaddr_storage addr, socklen_t len)
   m_protocol = protocol;
 }
 
-void net::TcpSocket::configureDualStack() {
+void net::Socket::configureDualStack() {
   auto context = std::string("[TcpSocket::configureDualStack] ");
   int option{0};  // removes the IPV6_V6ONLY option for the socket
   if (setsockopt(m_socket_fd, IPPROTO_IPV6, IPV6_V6ONLY,

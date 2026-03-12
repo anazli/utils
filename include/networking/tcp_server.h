@@ -5,7 +5,7 @@
 
 namespace net {
 
-class TcpServer : public TcpSocket {
+class TcpServer : public Socket {
  public:
   /*
    * Creates a TCP Server for the given local address and port number

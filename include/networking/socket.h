@@ -39,8 +39,8 @@ class DataStream {
   std::vector<uint8_t> m_buffer;
 };
 
-// A TCP Socket for client/server communication
-class TcpSocket {
+// A Socket for client/server communication
+class Socket {
  public:
   enum SocketType { TCP = SOCK_STREAM, UDP = SOCK_DGRAM };
   /*
@@ -49,18 +49,18 @@ class TcpSocket {
    * @param port Port number as string
    * @throws SocketException if address resolution or socket creation fails
    */
-  TcpSocket(const std::string& ip, const std::string& port, SocketType type);
+  Socket(const std::string& ip, const std::string& port, SocketType type);
 
-  TcpSocket(const TcpSocket&) = delete;
-  TcpSocket& operator=(const TcpSocket&) = delete;
+  Socket(const Socket&) = delete;
+  Socket& operator=(const Socket&) = delete;
 
-  TcpSocket(TcpSocket&& other) noexcept;
-  TcpSocket& operator=(TcpSocket&& other) noexcept;
+  Socket(Socket&& other) noexcept;
+  Socket& operator=(Socket&& other) noexcept;
 
   /*
    * Closes the socket and frees all resources
    */
-  virtual ~TcpSocket();
+  virtual ~Socket();
 
   /*
    * Returns the socket handle
@@ -84,8 +84,8 @@ class TcpSocket {
   int getProtocol() const;
 
  protected:
-  TcpSocket() = default;
-  TcpSocket(int existing_fd, sockaddr_storage addr, socklen_t len);
+  Socket() = default;
+  Socket(int existing_fd, sockaddr_storage addr, socklen_t len);
 
   void configureDualStack();
 

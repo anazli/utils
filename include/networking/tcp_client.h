@@ -4,7 +4,7 @@
 
 namespace net {
 
-class TcpClient : public TcpSocket {
+class TcpClient : public Socket {
  public:
   TcpClient() = default;
   /*
