@@ -4,11 +4,17 @@
 
 // Playgroud
 
-int main() {
+int main(int argc, char** argv) {
+  // Get message from cli to send
+  std::string arg_msg;
+  if (argc == 2) {
+    arg_msg = argv[1];
+  }
+
   try {
     net::TcpClient client("localhost", "8080");
     net::DataStream msg_to_send;
-    msg_to_send.append("Howdy, TCP Server");
+    msg_to_send.append(arg_msg);
 
     std::cout << "Client connects to the server.." << std::endl;
     client.connect();
