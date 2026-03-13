@@ -3,6 +3,7 @@
 #include "socket.h"
 
 namespace net {
+
 class UdpServer : public Socket {
  public:
   /*
@@ -29,4 +30,5 @@ class UdpServer : public Socket {
 
  private:
 };
+
 }  // namespace net

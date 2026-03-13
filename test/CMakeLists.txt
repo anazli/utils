@@ -16,6 +16,7 @@ add_executable(utilities_test
   socket_test.cpp
   tcp_client_test.cpp
   tcp_server_test.cpp
+  udp_server_test.cpp
 )
 
 target_include_directories(utilities_test PRIVATE ${CMAKE_SOURCE_DIR}/include)
