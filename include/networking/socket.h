@@ -42,7 +42,8 @@ class DataStream {
 // A Socket for client/server communication
 class Socket {
  public:
-  enum SocketType { TCP = SOCK_STREAM, UDP = SOCK_DGRAM };
+  enum SocketType { TYPE_TCP = SOCK_STREAM, TYPE_UDP = SOCK_DGRAM };
+  enum Protocol { PROT_TCP = 6, PROT_UDP = 17 };
   /*
    * Creates a socket for the given ip and port number
    * @param ip IP address or hostname to resolve

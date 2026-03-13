@@ -4,20 +4,20 @@
 
 net::TcpServer::TcpServer(const std::string& local_address,
                           const std::string& port)
-    : Socket(local_address, port, net::Socket::TCP) {}
+    : Socket(local_address, port, net::Socket::TYPE_TCP) {}
 
 void net::TcpServer::bind() {
   int opt = 1;  // prevent address already in use after restart
   setsockopt(m_socket_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
   if (::bind(m_socket_fd, reinterpret_cast<sockaddr*>(&m_storage), m_len) ==
       -1) {
-    throw SocketException("[TcpSocket::bind]", strerror(errno));
+    throw SocketException("[TcpServer::bind]", strerror(errno));
   }
 }
 
 void net::TcpServer::listen(int backlog) {
   if (::listen(m_socket_fd, backlog) == -1) {
-    throw SocketException("[TcpSocket::listen]", strerror(errno));
+    throw SocketException("[TcpServer::listen]", strerror(errno));
   }
 }
 

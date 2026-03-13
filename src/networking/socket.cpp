@@ -70,11 +70,11 @@ std::string net::DataStream::toString() const {
 
 net::Socket::Socket(const std::string& ip, const std::string& port,
                     SocketType type)
-    : m_len(sizeof(m_storage)),
-      m_family(AF_INET6),
-      m_type(type),
-      m_protocol(6) {
+    : m_len(sizeof(m_storage)), m_family(AF_INET6), m_type(type) {
   std::memset(&m_storage, 0, m_len);
+
+  m_protocol =
+      m_type == SocketType::TYPE_TCP ? Protocol::PROT_TCP : Protocol::PROT_UDP;
 
   addrinfo hints;
   std::memset(&hints, 0, sizeof(addrinfo));

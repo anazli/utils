@@ -3,7 +3,7 @@
 #include <cstring>
 
 net::TcpClient::TcpClient(const std::string& host, const std::string& port)
-    : Socket(host, port, net::Socket::TCP) {}
+    : Socket(host, port, net::Socket::TYPE_TCP) {}
 
 net::TcpClient::TcpClient(int existing_fd, sockaddr_storage addr, socklen_t len)
     : Socket(existing_fd, addr, len) {}
@@ -11,7 +11,7 @@ net::TcpClient::TcpClient(int existing_fd, sockaddr_storage addr, socklen_t len)
 void net::TcpClient::connect() {
   if (::connect(m_socket_fd, reinterpret_cast<sockaddr*>(&m_storage), m_len) ==
       -1) {
-    throw SocketException("[TcpSocket::bind]", strerror(errno));
+    throw SocketException("[TcpClient::connect]", strerror(errno));
   }
 }
 
@@ -21,14 +21,15 @@ ssize_t net::TcpClient::send(const DataStream& message, int flags) {
     if (errno == EINTR) {
       return 0;
     }
-    throw SocketException("[TcpSocket::send]", strerror(errno));
+    throw SocketException("[TcpClient::send]", strerror(errno));
   }
   return bytes_sent;
 }
 
 ssize_t net::TcpClient::recv(DataStream& message, int flags) {
+  std::string context("[TcpClient::recv]");
   if (message.size() == 0) {
-    throw SocketException("[TcpSocket::recv]", "message size buffer is empty");
+    throw SocketException(context, "message size buffer is empty");
   }
   auto bytes_received =
       ::recv(m_socket_fd, message.data(), message.size(), flags);
@@ -39,7 +40,7 @@ ssize_t net::TcpClient::recv(DataStream& message, int flags) {
     message.clear();
     return 0;
   } else {
-    throw SocketException("[TcpSocket::recv]", strerror(errno));
+    throw SocketException(context, strerror(errno));
   }
   return bytes_received;
 }
