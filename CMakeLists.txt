@@ -19,6 +19,8 @@ add_library(utilities
 	src/networking/tcp_client.cpp
 	include/networking/tcp_server.h
 	src/networking/tcp_server.cpp
+	include/networking/udp_client.h
+	src/networking/udp_client.cpp
 	include/networking/udp_server.h
 	src/networking/udp_server.cpp
 )

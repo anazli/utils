@@ -16,6 +16,7 @@ add_executable(utilities_test
   socket_test.cpp
   tcp_client_test.cpp
   tcp_server_test.cpp
+  udp_client_test.cpp
   udp_server_test.cpp
 )
 
