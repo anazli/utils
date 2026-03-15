@@ -3,14 +3,16 @@
 #include <cstring>
 
 net::TcpClient::TcpClient(const std::string& host, const std::string& port)
-    : Socket(host, port, net::Socket::TYPE_TCP) {}
+    : Socket(EndpointAddress::TYPE_TCP, EndpointAddress::PROT_TCP),
+      m_address(host, port, EndpointAddress::TYPE_TCP) {}
 
 net::TcpClient::TcpClient(int existing_fd, sockaddr_storage addr, socklen_t len)
     : Socket(existing_fd, addr, len) {}
 
 void net::TcpClient::connect() {
-  if (::connect(m_socket_fd, reinterpret_cast<sockaddr*>(&m_storage), m_len) ==
-      -1) {
+  if (::connect(m_socket_fd,
+                reinterpret_cast<sockaddr*>(m_address.getSockAddr()),
+                *m_address.getLen()) == -1) {
     throw SocketException("[TcpClient::connect]", strerror(errno));
   }
 }

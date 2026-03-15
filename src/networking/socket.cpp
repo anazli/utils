@@ -31,16 +31,19 @@ net::EndpointAddress::EndpointAddress() : m_storage_len(sizeof(m_storage)) {
 }
 
 net::EndpointAddress::EndpointAddress(const std::string& ip,
-                                      const std::string& port) {
+                                      const std::string& port, SocketType type)
+    : m_sock_type(type) {
   addrinfo hints, *result;
   std::memset(&hints, 0, sizeof(hints));
-  hints.ai_family = AF_UNSPEC;
-  hints.ai_socktype = 0;
+  hints.ai_family = AF_INET6;
+  hints.ai_socktype = type;
   hints.ai_flags = AI_PASSIVE | AI_V4MAPPED | AI_ALL;
+  hints.ai_protocol =
+      type == SocketType::TYPE_TCP ? Protocol::PROT_TCP : Protocol::PROT_UDP;
 
-  if (getaddrinfo(ip.c_str(), port.c_str(), &hints, &result)) {
+  if (auto r = getaddrinfo(ip.c_str(), port.c_str(), &hints, &result); r != 0) {
     throw SocketException("[EndpointAddress::EndpointAddress]",
-                          "Failed to resolve address!");
+                          gai_strerror(r));
   }
 
   m_storage_len = result->ai_addrlen;
@@ -59,6 +62,10 @@ sockaddr* net::EndpointAddress::getSockAddr() {
 const socklen_t* net::EndpointAddress::getLen() const { return &m_storage_len; }
 
 socklen_t* net::EndpointAddress::getLen() { return &m_storage_len; }
+
+net::EndpointAddress::SocketType net::EndpointAddress::getSockType() const {
+  return m_sock_type;
+}
 
 /***************************************************************
  *
@@ -108,45 +115,17 @@ std::string net::DataStream::toString() const {
  *
  ***************************************************************/
 
-net::Socket::Socket(const std::string& ip, const std::string& port,
-                    SocketType type)
-    : m_len(sizeof(m_storage)), m_family(AF_INET6), m_type(type) {
-  std::memset(&m_storage, 0, m_len);
-
-  m_protocol =
-      m_type == SocketType::TYPE_TCP ? Protocol::PROT_TCP : Protocol::PROT_UDP;
-
-  addrinfo hints;
-  std::memset(&hints, 0, sizeof(addrinfo));
-  hints.ai_family = m_family;
-  hints.ai_socktype = m_type;
-  hints.ai_protocol = m_protocol;
-  hints.ai_flags = AI_PASSIVE | AI_V4MAPPED | AI_ALL;  // accept any connections
-
-  auto context = std::string("[TcpSocket::TcpSocket] ");
-
-  addrinfo* address_info;
-
-  if (auto result =
-          getaddrinfo(ip.c_str(), port.c_str(), &hints, &address_info);
-      result != 0) {
-    throw SocketException(context, gai_strerror(result));
-  }
-
-  std::memcpy(&m_storage, address_info->ai_addr, address_info->ai_addrlen);
-  freeaddrinfo(address_info);
-
+net::Socket::Socket(EndpointAddress::SocketType type,
+                    EndpointAddress::Protocol protocol)
+    : m_family(AF_INET6), m_type(type), m_protocol(protocol) {
   if (m_socket_fd = socket(m_family, m_type, m_protocol); m_socket_fd == -1) {
-    throw SocketException(context, strerror(errno));
+    throw SocketException("[TcpSocket::TcpSocket]", strerror(errno));
   }
-
   configureDualStack();
 }
 
 net::Socket::Socket(Socket&& other) noexcept
-    : m_storage(other.m_storage),
-      m_len(other.m_len),
-      m_socket_fd(other.m_socket_fd),
+    : m_socket_fd(other.m_socket_fd),
       m_family(other.m_family),
       m_type(other.m_type),
       m_protocol(other.m_protocol) {
@@ -157,8 +136,6 @@ net::Socket& net::Socket::operator=(Socket&& other) noexcept {
   if (this != &other) {
     if (m_socket_fd != -1) ::close(m_socket_fd);
 
-    m_storage = other.m_storage;
-    m_len = other.m_len;
     m_socket_fd = other.m_socket_fd;
     m_family = other.m_family;
     m_type = other.m_type;
@@ -182,10 +159,7 @@ int net::Socket::getFamily() const { return m_family; }
 int net::Socket::getProtocol() const { return m_protocol; }
 
 net::Socket::Socket(int existing_fd, sockaddr_storage addr, socklen_t len)
-    : m_socket_fd(existing_fd),
-      m_storage(addr),
-      m_len(len),
-      m_family(addr.ss_family) {
+    : m_socket_fd(existing_fd), m_family(addr.ss_family) {
   int type;
   socklen_t type_len = sizeof(type);
   getsockopt(m_socket_fd, SOL_SOCKET, SO_TYPE, &type, &type_len);

@@ -4,13 +4,14 @@
 
 net::TcpServer::TcpServer(const std::string& local_address,
                           const std::string& port)
-    : Socket(local_address, port, net::Socket::TYPE_TCP) {}
+    : Socket(EndpointAddress::TYPE_TCP, EndpointAddress::PROT_TCP),
+      m_address(local_address, port, EndpointAddress::TYPE_TCP) {}
 
 void net::TcpServer::bind() {
   int opt = 1;  // prevent address already in use after restart
   setsockopt(m_socket_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
-  if (::bind(m_socket_fd, reinterpret_cast<sockaddr*>(&m_storage), m_len) ==
-      -1) {
+  if (::bind(m_socket_fd, reinterpret_cast<sockaddr*>(m_address.getSockAddr()),
+             *m_address.getLen()) == -1) {
     throw SocketException("[TcpServer::bind]", strerror(errno));
   }
 }

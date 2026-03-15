@@ -37,6 +37,7 @@ class TcpServer : public Socket {
   TcpClient accept();
 
  private:
+  EndpointAddress m_address;
 };
 
 }  // namespace net

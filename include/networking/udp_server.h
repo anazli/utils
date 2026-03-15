@@ -29,6 +29,7 @@ class UdpServer : public Socket {
   void bind();
 
  private:
+  EndpointAddress m_address;
 };
 
 }  // namespace net

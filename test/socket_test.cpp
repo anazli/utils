@@ -6,6 +6,7 @@
 #include <memory>
 
 using namespace testing;
+using namespace net;
 
 class SocketTest : public Test {
  public:
@@ -15,27 +16,29 @@ class SocketTest : public Test {
 };
 
 TEST_F(SocketTest, GivenInvalidInputWhenConstructsTCPThenItThrows) {
-  ASSERT_THROW(net::Socket s("", "", net::Socket::TYPE_TCP),
-               net::SocketException);
+  ASSERT_THROW(EndpointAddress a(
+                   EndpointAddress("", "", net::EndpointAddress::TYPE_TCP)),
+               SocketException);
 }
 
 TEST_F(SocketTest, GivenInvalidInputWhenConstructsUDPThenItThrows) {
-  ASSERT_THROW(net::Socket s("", "", net::Socket::TYPE_UDP),
-               net::SocketException);
+  ASSERT_THROW(EndpointAddress a(
+                   EndpointAddress("", "", net::EndpointAddress::TYPE_UDP)),
+               SocketException);
 }
 
 TEST_F(SocketTest, GivenValidInputWhenConstructsTCPThenSocketIsCreated) {
-  net::Socket s(remote_ip.data(), test_port.data(), net::Socket::TYPE_TCP);
+  net::Socket s(EndpointAddress::TYPE_TCP, EndpointAddress::PROT_TCP);
   EXPECT_THAT(s.getHandle(), Ne(-1));
   EXPECT_THAT(s.getType(), Eq(SOCK_STREAM));
   EXPECT_THAT(s.getFamily(), Eq(AF_INET6));
-  EXPECT_THAT(s.getProtocol(), Eq(net::Socket::PROT_TCP));
+  EXPECT_THAT(s.getProtocol(), Eq(net::EndpointAddress::PROT_TCP));
 }
 
 TEST_F(SocketTest, GivenValidInputWhenConstructsUDPThenSocketIsCreated) {
-  net::Socket s(remote_ip.data(), test_port.data(), net::Socket::TYPE_UDP);
+  net::Socket s(EndpointAddress::TYPE_UDP, EndpointAddress::PROT_UDP);
   EXPECT_THAT(s.getHandle(), Ne(-1));
   EXPECT_THAT(s.getType(), Eq(SOCK_DGRAM));
   EXPECT_THAT(s.getFamily(), Eq(AF_INET6));
-  EXPECT_THAT(s.getProtocol(), Eq(net::Socket::PROT_UDP));
+  EXPECT_THAT(s.getProtocol(), Eq(net::EndpointAddress::PROT_UDP));
 }

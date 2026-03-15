@@ -21,8 +21,12 @@ class SocketException : public std::runtime_error {
 
 class EndpointAddress {
  public:
+  enum SocketType { TYPE_TCP = SOCK_STREAM, TYPE_UDP = SOCK_DGRAM };
+  enum Protocol { PROT_TCP = 6, PROT_UDP = 17 };
+
   EndpointAddress();
-  EndpointAddress(const std::string& ip, const std::string& port);
+  EndpointAddress(const std::string& ip, const std::string& port,
+                  SocketType type);
 
   const sockaddr* getSockAddr() const;
   sockaddr* getSockAddr();
@@ -30,9 +34,12 @@ class EndpointAddress {
   const socklen_t* getLen() const;
   socklen_t* getLen();
 
+  SocketType getSockType() const;
+
  private:
   sockaddr_storage m_storage;
   socklen_t m_storage_len;
+  SocketType m_sock_type;
 };
 
 class DataStream {
@@ -58,15 +65,13 @@ class DataStream {
 // A Socket for client/server communication
 class Socket {
  public:
-  enum SocketType { TYPE_TCP = SOCK_STREAM, TYPE_UDP = SOCK_DGRAM };
-  enum Protocol { PROT_TCP = 6, PROT_UDP = 17 };
   /*
    * Creates a socket for the given ip and port number
    * @param ip IP address or hostname to resolve
    * @param port Port number as string
    * @throws SocketException if address resolution or socket creation fails
    */
-  Socket(const std::string& ip, const std::string& port, SocketType type);
+  Socket(EndpointAddress::SocketType type, EndpointAddress::Protocol protocol);
 
   Socket(const Socket&) = delete;
   Socket& operator=(const Socket&) = delete;
@@ -106,8 +111,6 @@ class Socket {
 
   void configureDualStack();
 
-  sockaddr_storage m_storage;
-  socklen_t m_len;
   int m_socket_fd;
   int m_family;
   int m_type;

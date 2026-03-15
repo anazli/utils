@@ -51,6 +51,7 @@ class TcpClient : public Socket {
   ssize_t recv(DataStream& message, int flags = 0);
 
  private:
+  EndpointAddress m_address;
 };
 
 }  // namespace net
