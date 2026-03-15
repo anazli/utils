@@ -63,7 +63,7 @@ const socklen_t* net::EndpointAddress::getLen() const { return &m_storage_len; }
 
 socklen_t* net::EndpointAddress::getLen() { return &m_storage_len; }
 
-net::EndpointAddress::SocketType net::EndpointAddress::getSockType() const {
+net::SocketType net::EndpointAddress::getSockType() const {
   return m_sock_type;
 }
 
@@ -115,9 +115,12 @@ std::string net::DataStream::toString() const {
  *
  ***************************************************************/
 
-net::Socket::Socket(EndpointAddress::SocketType type,
-                    EndpointAddress::Protocol protocol)
-    : m_family(AF_INET6), m_type(type), m_protocol(protocol) {
+net::Socket::Socket(const EndpointAddress& address, SocketType type,
+                    Protocol protocol)
+    : m_address(address),
+      m_family(AF_INET6),
+      m_type(type),
+      m_protocol(protocol) {
   if (m_socket_fd = socket(m_family, m_type, m_protocol); m_socket_fd == -1) {
     throw SocketException("[TcpSocket::TcpSocket]", strerror(errno));
   }
@@ -125,7 +128,8 @@ net::Socket::Socket(EndpointAddress::SocketType type,
 }
 
 net::Socket::Socket(Socket&& other) noexcept
-    : m_socket_fd(other.m_socket_fd),
+    : m_address(std::move(other.m_address)),
+      m_socket_fd(other.m_socket_fd),
       m_family(other.m_family),
       m_type(other.m_type),
       m_protocol(other.m_protocol) {
@@ -136,6 +140,7 @@ net::Socket& net::Socket::operator=(Socket&& other) noexcept {
   if (this != &other) {
     if (m_socket_fd != -1) ::close(m_socket_fd);
 
+    m_address = std::move(other.m_address);
     m_socket_fd = other.m_socket_fd;
     m_family = other.m_family;
     m_type = other.m_type;
@@ -157,6 +162,12 @@ int net::Socket::getType() const { return m_type; }
 int net::Socket::getFamily() const { return m_family; }
 
 int net::Socket::getProtocol() const { return m_protocol; }
+
+const net::EndpointAddress& net::Socket::getAddress() const {
+  return m_address;
+}
+
+net::EndpointAddress& net::Socket::getAddress() { return m_address; }
 
 net::Socket::Socket(int existing_fd, sockaddr_storage addr, socklen_t len)
     : m_socket_fd(existing_fd), m_family(addr.ss_family) {

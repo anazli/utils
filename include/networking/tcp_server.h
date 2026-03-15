@@ -15,6 +15,7 @@ class TcpServer : public Socket {
    * @throws SocketException if address resolution or socket creation fails
    */
   TcpServer(const std::string& local_address, const std::string& port);
+  TcpServer(const EndpointAddress& address);
 
   TcpServer(const TcpServer&) = delete;
   TcpServer& operator=(const TcpServer&) = delete;
@@ -35,9 +36,6 @@ class TcpServer : public Socket {
   void listen(int backlog = SOMAXCONN);
 
   TcpClient accept();
-
- private:
-  EndpointAddress m_address;
 };
 
 }  // namespace net

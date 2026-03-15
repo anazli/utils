@@ -1,11 +1,11 @@
+#include "networking/tcp_server.h"
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <future>
 #include <memory>
 #include <thread>
-
-#include "networking/tcp_server.h"
 
 using namespace testing;
 
@@ -20,7 +20,7 @@ TEST_F(TcpServerTest, GivenValidInputWhenCreatedThenItIsValid) {
 }
 
 TEST_F(TcpServerTest,
-       GivenValidSocketWhenItBindsToALocalAddressThenItDoesNoThrow) {
+       GivenValidSocketWhenItBindsToALocalAddressThenItDoesntThrow) {
   net::TcpServer s(local_ip.data(), test_port.data());
   auto new_server = std::move(s);
 

@@ -3,7 +3,7 @@
 #include "socket.h"
 
 namespace net {
-class UdpClient : Socket {
+class UdpClient : public Socket {
  public:
   UdpClient() = default;
   /*
@@ -14,6 +14,7 @@ class UdpClient : Socket {
    * @throws SocketException if address resolution or socket creation fails
    */
   UdpClient(const std::string& host, const std::string& port);
+  UdpClient(const EndpointAddress& address);
 
   UdpClient(const UdpClient&) = delete;
   UdpClient& operator=(UdpClient&) = delete;
@@ -26,7 +27,5 @@ class UdpClient : Socket {
   ssize_t sendTo(const DataStream& stream, EndpointAddress& address);
   ssize_t recvFrom(DataStream& stream, EndpointAddress& address,
                    size_t stream_size);
-
- private:
 };
 }  // namespace net

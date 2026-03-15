@@ -3,7 +3,11 @@
 #include <cstring>
 
 net::UdpClient::UdpClient(const std::string& host, const std::string& port)
-    : Socket(EndpointAddress::TYPE_UDP, EndpointAddress::PROT_UDP) {}
+    : Socket(EndpointAddress(host, port, SocketType::TYPE_UDP),
+             SocketType::TYPE_UDP, Protocol::PROT_UDP) {}
+
+net::UdpClient::UdpClient(const EndpointAddress& address)
+    : Socket(address, SocketType::TYPE_UDP, Protocol::PROT_UDP) {}
 
 ssize_t net::UdpClient::sendTo(const DataStream& stream,
                                EndpointAddress& address) {

@@ -4,8 +4,11 @@
 
 net::TcpServer::TcpServer(const std::string& local_address,
                           const std::string& port)
-    : Socket(EndpointAddress::TYPE_TCP, EndpointAddress::PROT_TCP),
-      m_address(local_address, port, EndpointAddress::TYPE_TCP) {}
+    : Socket(EndpointAddress(local_address, port, SocketType::TYPE_TCP),
+             SocketType::TYPE_TCP, Protocol::PROT_TCP) {}
+
+net::TcpServer::TcpServer(const EndpointAddress& address)
+    : Socket(address, SocketType::TYPE_TCP, Protocol::PROT_TCP) {}
 
 void net::TcpServer::bind() {
   int opt = 1;  // prevent address already in use after restart

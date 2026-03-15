@@ -3,8 +3,11 @@
 #include <cstring>
 
 net::TcpClient::TcpClient(const std::string& host, const std::string& port)
-    : Socket(EndpointAddress::TYPE_TCP, EndpointAddress::PROT_TCP),
-      m_address(host, port, EndpointAddress::TYPE_TCP) {}
+    : Socket(EndpointAddress(host, port, SocketType::TYPE_TCP),
+             SocketType::TYPE_TCP, Protocol::PROT_TCP) {}
+
+net::TcpClient::TcpClient(const EndpointAddress& address)
+    : Socket(address, SocketType::TYPE_TCP, Protocol::PROT_TCP) {}
 
 net::TcpClient::TcpClient(int existing_fd, sockaddr_storage addr, socklen_t len)
     : Socket(existing_fd, addr, len) {}

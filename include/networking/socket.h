@@ -19,11 +19,11 @@ class SocketException : public std::runtime_error {
   std::string m_context;
 };
 
+enum SocketType { TYPE_TCP = SOCK_STREAM, TYPE_UDP = SOCK_DGRAM };
+enum Protocol { PROT_TCP = 6, PROT_UDP = 17 };
+
 class EndpointAddress {
  public:
-  enum SocketType { TYPE_TCP = SOCK_STREAM, TYPE_UDP = SOCK_DGRAM };
-  enum Protocol { PROT_TCP = 6, PROT_UDP = 17 };
-
   EndpointAddress();
   EndpointAddress(const std::string& ip, const std::string& port,
                   SocketType type);
@@ -71,7 +71,7 @@ class Socket {
    * @param port Port number as string
    * @throws SocketException if address resolution or socket creation fails
    */
-  Socket(EndpointAddress::SocketType type, EndpointAddress::Protocol protocol);
+  Socket(const EndpointAddress& address, SocketType type, Protocol protocol);
 
   Socket(const Socket&) = delete;
   Socket& operator=(const Socket&) = delete;
@@ -105,12 +105,16 @@ class Socket {
    */
   int getProtocol() const;
 
+  const EndpointAddress& getAddress() const;
+  EndpointAddress& getAddress();
+
  protected:
   Socket() = default;
   Socket(int existing_fd, sockaddr_storage addr, socklen_t len);
 
   void configureDualStack();
 
+  EndpointAddress m_address;
   int m_socket_fd;
   int m_family;
   int m_type;

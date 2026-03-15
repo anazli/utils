@@ -15,6 +15,7 @@ class TcpClient : public Socket {
    * @throws SocketException if address resolution or socket creation fails
    */
   TcpClient(const std::string& host, const std::string& port);
+  TcpClient(const EndpointAddress& address);
   TcpClient(int existing_fd, sockaddr_storage addr, socklen_t len);
 
   TcpClient(const TcpClient&) = delete;
@@ -49,9 +50,6 @@ class TcpClient : public Socket {
    * throws SocketException if message buffer is empty or if result < 0
    */
   ssize_t recv(DataStream& message, int flags = 0);
-
- private:
-  EndpointAddress m_address;
 };
 
 }  // namespace net

@@ -14,6 +14,7 @@ class UdpServer : public Socket {
    * @throws SocketException if address resolution or socket creation fails
    */
   UdpServer(const std::string& local_address, const std::string& port);
+  UdpServer(const EndpointAddress& address);
 
   UdpServer(const UdpServer&) = delete;
   UdpServer& operator=(const UdpServer&) = delete;
@@ -28,8 +29,9 @@ class UdpServer : public Socket {
    */
   void bind();
 
- private:
-  EndpointAddress m_address;
+  ssize_t sendTo(const DataStream& stream, EndpointAddress& address);
+  ssize_t recvFrom(DataStream& stream, EndpointAddress& address,
+                   size_t stream_size);
 };
 
 }  // namespace net
