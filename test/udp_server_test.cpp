@@ -31,9 +31,9 @@ TEST_F(UdpServerTest,
 }
 
 TEST_F(UdpServerTest,
-       GivenValidServerWhenItAcceptsThenClientServerConnectionIsCorrect) {
+       GivenValidServerWhenItBindsThenClientServerConnectionIsCorrect) {
   std::string server_msg("Hello Client! You sent me:");
-  std::string client_msg("Howdy, TCP Server!");
+  std::string client_msg("Howdy, UDP Server!");
 
   net::UdpServer server(local_ip.data(), test_port.data());
   server.bind();
