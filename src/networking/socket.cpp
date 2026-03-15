@@ -22,6 +22,46 @@ const char* net::SocketException::what() const noexcept {
 
 /***************************************************************
  *
+ * EndpointAddress
+ *
+ ***************************************************************/
+
+net::EndpointAddress::EndpointAddress() : m_storage_len(sizeof(m_storage)) {
+  std::memset(&m_storage, 0, m_storage_len);
+}
+
+net::EndpointAddress::EndpointAddress(const std::string& ip,
+                                      const std::string& port) {
+  addrinfo hints, *result;
+  std::memset(&hints, 0, sizeof(hints));
+  hints.ai_family = AF_UNSPEC;
+  hints.ai_socktype = 0;
+  hints.ai_flags = AI_PASSIVE | AI_V4MAPPED | AI_ALL;
+
+  if (getaddrinfo(ip.c_str(), port.c_str(), &hints, &result)) {
+    throw SocketException("[EndpointAddress::EndpointAddress]",
+                          "Failed to resolve address!");
+  }
+
+  m_storage_len = result->ai_addrlen;
+  std::memcpy(&m_storage, result->ai_addr, m_storage_len);
+  freeaddrinfo(result);
+}
+
+const sockaddr* net::EndpointAddress::getSockAddr() const {
+  return reinterpret_cast<const sockaddr*>(&m_storage);
+}
+
+sockaddr* net::EndpointAddress::getSockAddr() {
+  return reinterpret_cast<sockaddr*>(&m_storage);
+}
+
+const socklen_t* net::EndpointAddress::getLen() const { return &m_storage_len; }
+
+socklen_t* net::EndpointAddress::getLen() { return &m_storage_len; }
+
+/***************************************************************
+ *
  * DataPacket
  *
  ***************************************************************/

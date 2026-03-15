@@ -19,6 +19,22 @@ class SocketException : public std::runtime_error {
   std::string m_context;
 };
 
+class EndpointAddress {
+ public:
+  EndpointAddress();
+  EndpointAddress(const std::string& ip, const std::string& port);
+
+  const sockaddr* getSockAddr() const;
+  sockaddr* getSockAddr();
+
+  const socklen_t* getLen() const;
+  socklen_t* getLen();
+
+ private:
+  sockaddr_storage m_storage;
+  socklen_t m_storage_len;
+};
+
 class DataStream {
  public:
   DataStream() = default;

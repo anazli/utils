@@ -23,6 +23,10 @@ class UdpClient : Socket {
 
   ~UdpClient() override = default;
 
+  ssize_t sendTo(const DataStream& stream, EndpointAddress& address);
+  ssize_t recvFrom(DataStream& stream, EndpointAddress& address,
+                   size_t stream_size);
+
  private:
 };
 }  // namespace net
