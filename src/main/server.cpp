@@ -2,7 +2,9 @@
 
 #include "networking/tcp_server.h"
 
-// Playgroud
+bool shouldExit(const std::string& message) {
+  return message == "exit" || message == "quit";
+}
 
 int main() {
   try {
@@ -10,10 +12,9 @@ int main() {
     server.bind();
     std::cout << "Server is listening..." << std::endl;
     server.listen();
-    std::cout << "Done!" << std::endl;
 
     net::DataStream received_msg(1024);
-    while (received_msg.toString() != "Exit") {
+    while (!shouldExit(received_msg.toString())) {
       std::cout << "Accepting new connection" << std::endl;
       auto client = server.accept();
       std::cout << "On file descriptor:" << client.getHandle() << std::endl;
@@ -24,7 +25,7 @@ int main() {
                 << received_msg.toString() << std::endl;
 
       net::DataStream msg_to_send;
-      msg_to_send.append("Hello Client, you sent: ")
+      msg_to_send.append("Server: ")
           .append(received_msg.data(), received_msg.size());
 
       client.send(msg_to_send);
