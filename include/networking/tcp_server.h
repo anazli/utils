@@ -1,5 +1,7 @@
 #pragma once
 
+#include <sys/epoll.h>
+
 #include "socket.h"
 #include "tcp_client.h"
 
@@ -36,6 +38,12 @@ class TcpServer : public Socket {
   void listen(int backlog = SOMAXCONN);
 
   TcpClient accept();
+
+  void listenAndServe();
+
+ private:
+  void handleNewConnection(int epoll_fd, epoll_event& event);
+  void handleClientEvent(int epoll_fd, DataStream& buffer, epoll_event& event);
 };
 
 }  // namespace net
