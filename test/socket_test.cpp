@@ -15,7 +15,6 @@ class SocketTest : public Test {
   std::string local_ip = "127.0.0.1";
   std::string test_port = "8080";
   std::string ip_and_port = local_ip + ":" + test_port;
-  EndpointAddress test_address;
 };
 
 TEST_F(SocketTest, GivenInvalidInputWhenConstructsTCPThenItThrows) {
@@ -29,7 +28,7 @@ TEST_F(SocketTest, GivenInvalidInputWhenConstructsUDPThenItThrows) {
 }
 
 TEST_F(SocketTest, GivenValidInputWhenConstructsTCPThenSocketIsCreated) {
-  test_address = EndpointAddress(local_ip, test_port, TYPE_TCP);
+  auto test_address = EndpointAddress(local_ip, test_port, TYPE_TCP);
   net::Socket s(test_address, TYPE_TCP, PROT_TCP);
   EXPECT_THAT(s.getHandle(), Ne(-1));
   EXPECT_THAT(s.getType(), Eq(SOCK_STREAM));
@@ -38,7 +37,7 @@ TEST_F(SocketTest, GivenValidInputWhenConstructsTCPThenSocketIsCreated) {
 }
 
 TEST_F(SocketTest, GivenValidInputWhenConstructsUDPThenSocketIsCreated) {
-  test_address = EndpointAddress(local_ip, test_port, TYPE_UDP);
+  auto test_address = EndpointAddress(local_ip, test_port, TYPE_UDP);
   net::Socket s(test_address, TYPE_UDP, PROT_UDP);
   EXPECT_THAT(s.getHandle(), Ne(-1));
   EXPECT_THAT(s.getType(), Eq(SOCK_DGRAM));

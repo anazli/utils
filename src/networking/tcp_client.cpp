@@ -5,8 +5,17 @@
 net::TcpClient::TcpClient()
     : Socket(SocketType::TYPE_TCP, Protocol::PROT_TCP) {}
 
-net::TcpClient::TcpClient(int existing_fd, sockaddr_storage addr, socklen_t len)
-    : Socket(existing_fd, addr, len) {}
+net::TcpClient::TcpClient(int existing_fd,
+                          const EndpointAddress& remote_address)
+    : Socket(existing_fd, remote_address) {}
+
+net::EndpointAddress& net::TcpClient::getLocalAddress() {
+  if (::getsockname(m_socket_fd, m_local_address.getSockAddr(),
+                    m_local_address.getLen()) == -1) {
+    throw SocketException("[TcpClient::getLocalAddress]", strerror(errno));
+  }
+  return m_local_address;
+}
 
 void net::TcpClient::connect(const EndpointAddress& remote_address) {
   m_remote_address = remote_address;

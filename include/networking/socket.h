@@ -24,7 +24,7 @@ enum Protocol { PROT_TCP = 6, PROT_UDP = 17 };
 
 class EndpointAddress {
  public:
-  EndpointAddress();
+  EndpointAddress(SocketType type);
   EndpointAddress(const std::string& ip, const std::string& port,
                   SocketType type);
 
@@ -116,15 +116,12 @@ class Socket {
    */
   int getProtocol() const;
 
-  EndpointAddress& getLocalAddress();
-  const EndpointAddress& getLocalAddress() const;
-
-  EndpointAddress& getRemoteAddress();
-  const EndpointAddress& getRemoteAddress() const;
+  virtual EndpointAddress& getLocalAddress();
+  virtual EndpointAddress& getRemoteAddress();
 
  protected:
-  Socket() = default;
-  Socket(int existing_fd, sockaddr_storage addr, socklen_t len);
+  Socket() = delete;
+  Socket(int existing_fd, const EndpointAddress& remote_address);
 
   void configureDualStack();
 

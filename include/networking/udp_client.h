@@ -15,6 +15,8 @@ class UdpClient : public Socket {
 
   ~UdpClient() override = default;
 
+  EndpointAddress& getLocalAddress() override;
+
   ssize_t sendTo(const DataStream& stream, EndpointAddress& address);
   ssize_t recvFrom(DataStream& stream, EndpointAddress& address,
                    size_t stream_size);

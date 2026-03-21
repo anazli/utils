@@ -5,6 +5,14 @@
 net::UdpClient::UdpClient()
     : Socket(SocketType::TYPE_UDP, Protocol::PROT_UDP) {}
 
+net::EndpointAddress& net::UdpClient::getLocalAddress() {
+  if (::getsockname(m_socket_fd, m_local_address.getSockAddr(),
+                    m_local_address.getLen()) == -1) {
+    throw SocketException("[TcpClient::getLocalAddress]", strerror(errno));
+  }
+  return m_local_address;
+}
+
 ssize_t net::UdpClient::sendTo(const DataStream& stream,
                                EndpointAddress& address) {
   int bytes_sent = ::sendto(m_socket_fd, stream.data(), stream.size(), 0,

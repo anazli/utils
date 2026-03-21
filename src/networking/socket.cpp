@@ -26,7 +26,8 @@ const char* net::SocketException::what() const noexcept {
  *
  ***************************************************************/
 
-net::EndpointAddress::EndpointAddress() : m_storage_len(sizeof(m_storage)) {
+net::EndpointAddress::EndpointAddress(SocketType type)
+    : m_sock_type(type), m_storage_len(sizeof(m_storage)) {
   std::memset(&m_storage, 0, m_storage_len);
 }
 
@@ -134,7 +135,8 @@ net::Socket::Socket(const EndpointAddress& address, SocketType type,
     : m_local_address(address),
       m_family(AF_INET6),
       m_type(type),
-      m_protocol(protocol) {
+      m_protocol(protocol),
+      m_remote_address(type) {
   if (m_socket_fd = socket(m_family, m_type, m_protocol); m_socket_fd == -1) {
     throw SocketException("[TcpSocket::TcpSocket]", strerror(errno));
   }
@@ -142,7 +144,11 @@ net::Socket::Socket(const EndpointAddress& address, SocketType type,
 }
 
 net::Socket::Socket(SocketType type, Protocol protocol)
-    : m_family(AF_INET6), m_type(type), m_protocol(protocol) {
+    : m_family(AF_INET6),
+      m_type(type),
+      m_protocol(protocol),
+      m_local_address(type),
+      m_remote_address(type) {
   if (m_socket_fd = socket(m_family, m_type, m_protocol); m_socket_fd == -1) {
     throw SocketException("[TcpSocket::TcpSocket]", strerror(errno));
   }
@@ -189,29 +195,18 @@ int net::Socket::getProtocol() const { return m_protocol; }
 
 net::EndpointAddress& net::Socket::getLocalAddress() { return m_local_address; }
 
-const net::EndpointAddress& net::Socket::getLocalAddress() const {
-  return m_local_address;
-}
-
 net::EndpointAddress& net::Socket::getRemoteAddress() {
   return m_remote_address;
 }
 
-const net::EndpointAddress& net::Socket::getRemoteAddress() const {
-  return m_remote_address;
-}
-
-net::Socket::Socket(int existing_fd, sockaddr_storage addr, socklen_t len)
-    : m_socket_fd(existing_fd), m_family(addr.ss_family) {
-  int type;
-  socklen_t type_len = sizeof(type);
-  getsockopt(m_socket_fd, SOL_SOCKET, SO_TYPE, &type, &type_len);
-  m_type = type;
-
-  int protocol;
-  socklen_t prot_len = sizeof(protocol);
-  getsockopt(m_socket_fd, SOL_SOCKET, SO_PROTOCOL, &protocol, &prot_len);
-  m_protocol = protocol;
+net::Socket::Socket(int existing_fd, const EndpointAddress& remote_address)
+    : m_socket_fd(existing_fd),
+      m_remote_address(remote_address),
+      m_type(remote_address.getSockType()),
+      m_family(AF_INET6),
+      m_local_address(remote_address.getSockType()) {
+  m_protocol =
+      m_type == SocketType::TYPE_TCP ? Protocol::PROT_TCP : Protocol::PROT_UDP;
 }
 
 void net::Socket::configureDualStack() {

@@ -7,7 +7,7 @@ namespace net {
 class TcpClient : public Socket {
  public:
   TcpClient();
-  TcpClient(int existing_fd, sockaddr_storage addr, socklen_t len);
+  TcpClient(int existing_fd, const EndpointAddress& remote_address);
 
   TcpClient(const TcpClient&) = delete;
   TcpClient& operator=(TcpClient&) = delete;
@@ -16,6 +16,8 @@ class TcpClient : public Socket {
   TcpClient& operator=(TcpClient&& other) noexcept = default;
 
   ~TcpClient() override = default;
+
+  EndpointAddress& getLocalAddress() override;
 
   /*
    * Connects the socket to the remote address

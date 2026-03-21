@@ -17,7 +17,8 @@ int main() {
     while (!shouldExit(received_msg.toString())) {
       std::cout << "Accepting new connection" << std::endl;
       auto client = server.accept();
-      std::cout << "On file descriptor:" << client.getHandle() << std::endl;
+      std::cout << "Client: " << client.getRemoteAddress().toString()
+                << " connected.." << std::endl;
 
       client.recv(received_msg);
 

@@ -27,12 +27,9 @@ void net::TcpServer::listen(int backlog) {
 }
 
 net::TcpClient net::TcpServer::accept() {
-  sockaddr_storage client_addr;
-  socklen_t client_len = sizeof(client_addr);
-
   // blocking call
-  int new_client = ::accept(
-      m_socket_fd, reinterpret_cast<sockaddr*>(&client_addr), &client_len);
+  int new_client = ::accept(m_socket_fd, m_remote_address.getSockAddr(),
+                            m_remote_address.getLen());
 
-  return TcpClient(new_client, client_addr, client_len);
+  return TcpClient(new_client, m_remote_address);
 }
