@@ -4,8 +4,8 @@
 
 net::TcpServer::TcpServer(const std::string& local_address,
                           const std::string& port)
-    : Socket(EndpointAddress(local_address, port, SocketType::TYPE_TCP),
-             SocketType::TYPE_TCP, Protocol::PROT_TCP) {}
+    : Socket(EndpointAddress(local_address, port), SocketType::TYPE_TCP,
+             Protocol::PROT_TCP) {}
 
 net::TcpServer::TcpServer(const EndpointAddress& address)
     : Socket(address, SocketType::TYPE_TCP, Protocol::PROT_TCP) {}

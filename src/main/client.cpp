@@ -16,8 +16,7 @@ int main() {
       net::DataStream msg_to_send;
       msg_to_send.append(message);
 
-      net::EndpointAddress remote_address("localhost", "8080",
-                                          net::SocketType::TYPE_TCP);
+      net::EndpointAddress remote_address("localhost", "8080");
 
       // std::cout << "Client connects to the server.." << std::endl;
       client.connect(remote_address);

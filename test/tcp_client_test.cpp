@@ -15,7 +15,7 @@ class TcpClientTest : public Test {
   std::string test_port = std::string("80");
   std::string remote_ip_and_port = test_ip + ":" + test_port;
   net::EndpointAddress remote_test_address =
-      EndpointAddress(test_ip, test_port, TYPE_TCP);
+      EndpointAddress(test_ip, test_port);
 };
 
 TEST_F(TcpClientTest, GivenValidInputWhenCreatedThenItIsValid) {

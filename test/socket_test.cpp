@@ -18,17 +18,15 @@ class SocketTest : public Test {
 };
 
 TEST_F(SocketTest, GivenInvalidInputWhenConstructsTCPThenItThrows) {
-  ASSERT_THROW(EndpointAddress a(EndpointAddress("", "", TYPE_TCP)),
-               SocketException);
+  ASSERT_THROW(EndpointAddress a(EndpointAddress("", "")), SocketException);
 }
 
 TEST_F(SocketTest, GivenInvalidInputWhenConstructsUDPThenItThrows) {
-  ASSERT_THROW(EndpointAddress a(EndpointAddress("", "", TYPE_UDP)),
-               SocketException);
+  ASSERT_THROW(EndpointAddress a(EndpointAddress("", "")), SocketException);
 }
 
 TEST_F(SocketTest, GivenValidInputWhenConstructsTCPThenSocketIsCreated) {
-  auto test_address = EndpointAddress(local_ip, test_port, TYPE_TCP);
+  auto test_address = EndpointAddress(local_ip, test_port);
   net::Socket s(test_address, TYPE_TCP, PROT_TCP);
   EXPECT_THAT(s.getHandle(), Ne(-1));
   EXPECT_THAT(s.getType(), Eq(SOCK_STREAM));
@@ -37,7 +35,7 @@ TEST_F(SocketTest, GivenValidInputWhenConstructsTCPThenSocketIsCreated) {
 }
 
 TEST_F(SocketTest, GivenValidInputWhenConstructsUDPThenSocketIsCreated) {
-  auto test_address = EndpointAddress(local_ip, test_port, TYPE_UDP);
+  auto test_address = EndpointAddress(local_ip, test_port);
   net::Socket s(test_address, TYPE_UDP, PROT_UDP);
   EXPECT_THAT(s.getHandle(), Ne(-1));
   EXPECT_THAT(s.getType(), Eq(SOCK_DGRAM));

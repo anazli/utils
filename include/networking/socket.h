@@ -24,9 +24,8 @@ enum Protocol { PROT_TCP = 6, PROT_UDP = 17 };
 
 class EndpointAddress {
  public:
-  EndpointAddress(SocketType type);
-  EndpointAddress(const std::string& ip, const std::string& port,
-                  SocketType type);
+  EndpointAddress();
+  EndpointAddress(const std::string& ip, const std::string& port);
 
   const sockaddr* getSockAddr() const;
   sockaddr* getSockAddr();
@@ -34,14 +33,11 @@ class EndpointAddress {
   const socklen_t* getLen() const;
   socklen_t* getLen();
 
-  SocketType getSockType() const;
-
   std::string toString() const;
 
  private:
   sockaddr_storage m_storage;
   socklen_t m_storage_len;
-  SocketType m_sock_type;
 };
 
 class DataStream {

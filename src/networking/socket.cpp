@@ -26,22 +26,16 @@ const char* net::SocketException::what() const noexcept {
  *
  ***************************************************************/
 
-net::EndpointAddress::EndpointAddress(SocketType type)
-    : m_sock_type(type), m_storage_len(sizeof(m_storage)) {
+net::EndpointAddress::EndpointAddress() : m_storage_len(sizeof(m_storage)) {
   std::memset(&m_storage, 0, m_storage_len);
 }
 
 net::EndpointAddress::EndpointAddress(const std::string& ip,
-                                      const std::string& port, SocketType type)
-    : m_sock_type(type) {
+                                      const std::string& port) {
   addrinfo hints, *result;
   std::memset(&hints, 0, sizeof(hints));
   hints.ai_family = AF_INET6;
-  hints.ai_socktype = type;
   hints.ai_flags = AI_PASSIVE | AI_V4MAPPED | AI_ALL;
-  hints.ai_protocol =
-      type == SocketType::TYPE_TCP ? Protocol::PROT_TCP : Protocol::PROT_UDP;
-
   if (auto r = getaddrinfo(ip.c_str(), port.c_str(), &hints, &result); r != 0) {
     throw SocketException("[EndpointAddress::EndpointAddress]",
                           gai_strerror(r));
@@ -63,10 +57,6 @@ sockaddr* net::EndpointAddress::getSockAddr() {
 const socklen_t* net::EndpointAddress::getLen() const { return &m_storage_len; }
 
 socklen_t* net::EndpointAddress::getLen() { return &m_storage_len; }
-
-net::SocketType net::EndpointAddress::getSockType() const {
-  return m_sock_type;
-}
 
 std::string net::EndpointAddress::toString() const {
   char host[NI_MAXHOST];
@@ -135,8 +125,7 @@ net::Socket::Socket(const EndpointAddress& address, SocketType type,
     : m_local_address(address),
       m_family(AF_INET6),
       m_type(type),
-      m_protocol(protocol),
-      m_remote_address(type) {
+      m_protocol(protocol) {
   if (m_socket_fd = socket(m_family, m_type, m_protocol); m_socket_fd == -1) {
     throw SocketException("[TcpSocket::TcpSocket]", strerror(errno));
   }
@@ -144,11 +133,7 @@ net::Socket::Socket(const EndpointAddress& address, SocketType type,
 }
 
 net::Socket::Socket(SocketType type, Protocol protocol)
-    : m_family(AF_INET6),
-      m_type(type),
-      m_protocol(protocol),
-      m_local_address(type),
-      m_remote_address(type) {
+    : m_family(AF_INET6), m_type(type), m_protocol(protocol) {
   if (m_socket_fd = socket(m_family, m_type, m_protocol); m_socket_fd == -1) {
     throw SocketException("[TcpSocket::TcpSocket]", strerror(errno));
   }
@@ -202,9 +187,9 @@ net::EndpointAddress& net::Socket::getRemoteAddress() {
 net::Socket::Socket(int existing_fd, const EndpointAddress& remote_address)
     : m_socket_fd(existing_fd),
       m_remote_address(remote_address),
-      m_type(remote_address.getSockType()),
-      m_family(AF_INET6),
-      m_local_address(remote_address.getSockType()) {
+      m_type(SocketType::TYPE_TCP),  // it's being used only in the
+                                     // TcpServer::accept
+      m_family(AF_INET6) {
   m_protocol =
       m_type == SocketType::TYPE_TCP ? Protocol::PROT_TCP : Protocol::PROT_UDP;
 }

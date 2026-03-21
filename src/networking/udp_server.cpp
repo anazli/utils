@@ -4,8 +4,8 @@
 
 net::UdpServer::UdpServer(const std::string& local_address,
                           const std::string& port)
-    : Socket(EndpointAddress(local_address, port, SocketType::TYPE_UDP),
-             SocketType::TYPE_UDP, Protocol::PROT_UDP) {}
+    : Socket(EndpointAddress(local_address, port), SocketType::TYPE_UDP,
+             Protocol::PROT_UDP) {}
 
 net::UdpServer::UdpServer(const EndpointAddress& address)
     : Socket(address, SocketType::TYPE_UDP, Protocol::PROT_UDP) {}
