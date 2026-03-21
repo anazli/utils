@@ -2,20 +2,17 @@
 
 #include <cstring>
 
-net::TcpClient::TcpClient(const std::string& host, const std::string& port)
-    : Socket(EndpointAddress(host, port, SocketType::TYPE_TCP),
-             SocketType::TYPE_TCP, Protocol::PROT_TCP) {}
-
-net::TcpClient::TcpClient(const EndpointAddress& address)
-    : Socket(address, SocketType::TYPE_TCP, Protocol::PROT_TCP) {}
+net::TcpClient::TcpClient()
+    : Socket(SocketType::TYPE_TCP, Protocol::PROT_TCP) {}
 
 net::TcpClient::TcpClient(int existing_fd, sockaddr_storage addr, socklen_t len)
     : Socket(existing_fd, addr, len) {}
 
-void net::TcpClient::connect() {
+void net::TcpClient::connect(const EndpointAddress& remote_address) {
+  m_remote_address = remote_address;
   if (::connect(m_socket_fd,
-                reinterpret_cast<sockaddr*>(m_address.getSockAddr()),
-                *m_address.getLen()) == -1) {
+                reinterpret_cast<sockaddr*>(m_remote_address.getSockAddr()),
+                *m_remote_address.getLen()) == -1) {
     throw SocketException("[TcpClient::connect]", strerror(errno));
   }
 }

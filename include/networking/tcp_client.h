@@ -6,16 +6,7 @@ namespace net {
 
 class TcpClient : public Socket {
  public:
-  TcpClient() = default;
-  /*
-   * Creates a TCP Client for the given host address and port number
-   * to connect to
-   * @param host IP address or hostname to connect
-   * @param port Port number as string
-   * @throws SocketException if address resolution or socket creation fails
-   */
-  TcpClient(const std::string& host, const std::string& port);
-  TcpClient(const EndpointAddress& address);
+  TcpClient();
   TcpClient(int existing_fd, sockaddr_storage addr, socklen_t len);
 
   TcpClient(const TcpClient&) = delete;
@@ -27,9 +18,9 @@ class TcpClient : public Socket {
   ~TcpClient() override = default;
 
   /*
-   * Connects the socket to the provided address during construction
+   * Connects the socket to the remote address
    */
-  void connect();
+  void connect(const EndpointAddress& remote_address);
 
   /*
    * Sends message to the connected endpoint

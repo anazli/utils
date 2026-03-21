@@ -4,13 +4,6 @@
 
 #include <cstring>
 
-namespace {
-std::string stripIpv4MappedIpv6Address(const std::string& host) {
-  auto ipv6_prefix = std::string("::ffff:");
-  return host.find(ipv6_prefix) == 0 ? host.substr(ipv6_prefix.length()) : host;
-}
-}  // namespace
-
 /***************************************************************
  *
  * SocketException
@@ -85,7 +78,7 @@ std::string net::EndpointAddress::toString() const {
     return "Unknown Address";
   }
 
-  return stripIpv4MappedIpv6Address(host) + ":" + std::string(service);
+  return std::string(host) + ":" + std::string(service);
 }
 
 /***************************************************************
@@ -138,7 +131,7 @@ std::string net::DataStream::toString() const {
 
 net::Socket::Socket(const EndpointAddress& address, SocketType type,
                     Protocol protocol)
-    : m_address(address),
+    : m_local_address(address),
       m_family(AF_INET6),
       m_type(type),
       m_protocol(protocol) {
@@ -148,8 +141,17 @@ net::Socket::Socket(const EndpointAddress& address, SocketType type,
   configureDualStack();
 }
 
+net::Socket::Socket(SocketType type, Protocol protocol)
+    : m_family(AF_INET6), m_type(type), m_protocol(protocol) {
+  if (m_socket_fd = socket(m_family, m_type, m_protocol); m_socket_fd == -1) {
+    throw SocketException("[TcpSocket::TcpSocket]", strerror(errno));
+  }
+  configureDualStack();
+}
+
 net::Socket::Socket(Socket&& other) noexcept
-    : m_address(std::move(other.m_address)),
+    : m_local_address(std::move(other.m_local_address)),
+      m_remote_address(std::move(other.m_remote_address)),
       m_socket_fd(other.m_socket_fd),
       m_family(other.m_family),
       m_type(other.m_type),
@@ -161,7 +163,8 @@ net::Socket& net::Socket::operator=(Socket&& other) noexcept {
   if (this != &other) {
     if (m_socket_fd != -1) ::close(m_socket_fd);
 
-    m_address = std::move(other.m_address);
+    m_local_address = std::move(other.m_local_address);
+    m_remote_address = std::move(other.m_remote_address);
     m_socket_fd = other.m_socket_fd;
     m_family = other.m_family;
     m_type = other.m_type;
@@ -184,11 +187,19 @@ int net::Socket::getFamily() const { return m_family; }
 
 int net::Socket::getProtocol() const { return m_protocol; }
 
-const net::EndpointAddress& net::Socket::getAddress() const {
-  return m_address;
+net::EndpointAddress& net::Socket::getLocalAddress() { return m_local_address; }
+
+const net::EndpointAddress& net::Socket::getLocalAddress() const {
+  return m_local_address;
 }
 
-net::EndpointAddress& net::Socket::getAddress() { return m_address; }
+net::EndpointAddress& net::Socket::getRemoteAddress() {
+  return m_remote_address;
+}
+
+const net::EndpointAddress& net::Socket::getRemoteAddress() const {
+  return m_remote_address;
+}
 
 net::Socket::Socket(int existing_fd, sockaddr_storage addr, socklen_t len)
     : m_socket_fd(existing_fd), m_family(addr.ss_family) {

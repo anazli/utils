@@ -38,16 +38,16 @@ TEST_F(UdpServerTest,
   net::UdpServer server(local_ip.data(), test_port.data());
   server.bind();
 
-  auto remote_client = net::UdpClient(local_ip.data(), test_port.data());
+  net::UdpClient remote_client;
 
   std::thread t([&server, &remote_client, &server_msg] {
     try {
       net::DataStream received;
-      server.recvFrom(received, remote_client.getAddress(), 1024);
+      server.recvFrom(received, remote_client.getLocalAddress(), 1024);
 
       net::DataStream msg_to_send;
       msg_to_send.append(server_msg).append(received.data(), received.size());
-      server.sendTo(msg_to_send, remote_client.getAddress());
+      server.sendTo(msg_to_send, remote_client.getLocalAddress());
 
     } catch (const net::SocketException& e) {
     }
@@ -55,10 +55,10 @@ TEST_F(UdpServerTest,
 
   net::DataStream client_packet;
   client_packet.append(client_msg);
-  remote_client.sendTo(client_packet, server.getAddress());
+  remote_client.sendTo(client_packet, server.getLocalAddress());
 
   net::DataStream result_msg;
-  remote_client.recvFrom(result_msg, server.getAddress(), 1024);
+  remote_client.recvFrom(result_msg, server.getLocalAddress(), 1024);
 
   t.join();
 
@@ -66,4 +66,7 @@ TEST_F(UdpServerTest,
   EXPECT_THAT(remote_client.getType(), Eq(server.getType()));
   EXPECT_THAT(remote_client.getProtocol(), Eq(server.getProtocol()));
   EXPECT_THAT(result_msg.toString(), Eq(server_msg + client_msg));
+  EXPECT_THAT(server.getRemoteAddress().toString(), Eq("Unknown Address"));
+  EXPECT_THAT(remote_client.getRemoteAddress().toString(),
+              Eq("Unknown Address"));
 }

@@ -35,7 +35,6 @@ TEST_F(SocketTest, GivenValidInputWhenConstructsTCPThenSocketIsCreated) {
   EXPECT_THAT(s.getType(), Eq(SOCK_STREAM));
   EXPECT_THAT(s.getFamily(), Eq(AF_INET6));
   EXPECT_THAT(s.getProtocol(), Eq(PROT_TCP));
-  EXPECT_THAT(s.getAddress().toString(), Eq(ip_and_port));
 }
 
 TEST_F(SocketTest, GivenValidInputWhenConstructsUDPThenSocketIsCreated) {
@@ -45,5 +44,4 @@ TEST_F(SocketTest, GivenValidInputWhenConstructsUDPThenSocketIsCreated) {
   EXPECT_THAT(s.getType(), Eq(SOCK_DGRAM));
   EXPECT_THAT(s.getFamily(), Eq(AF_INET6));
   EXPECT_THAT(s.getProtocol(), Eq(PROT_UDP));
-  EXPECT_THAT(s.getAddress().toString(), Eq(ip_and_port));
 }

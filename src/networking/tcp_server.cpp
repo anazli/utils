@@ -13,8 +13,9 @@ net::TcpServer::TcpServer(const EndpointAddress& address)
 void net::TcpServer::bind() {
   int opt = 1;  // prevent address already in use after restart
   setsockopt(m_socket_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
-  if (::bind(m_socket_fd, reinterpret_cast<sockaddr*>(m_address.getSockAddr()),
-             *m_address.getLen()) == -1) {
+  if (::bind(m_socket_fd,
+             reinterpret_cast<sockaddr*>(m_local_address.getSockAddr()),
+             *m_local_address.getLen()) == -1) {
     throw SocketException("[TcpServer::bind]", strerror(errno));
   }
 }

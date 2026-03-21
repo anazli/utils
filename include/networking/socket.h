@@ -69,11 +69,20 @@ class Socket {
  public:
   /*
    * Creates a socket for the given ip and port number
-   * @param ip IP address or hostname to resolve
-   * @param port Port number as string
+   * @param Endpoint address to resolve
+   * @param type Socket Type
+   * @param protocol (TCP or UDP)
    * @throws SocketException if address resolution or socket creation fails
    */
   Socket(const EndpointAddress& address, SocketType type, Protocol protocol);
+
+  /*
+   * Creates a socket for given type and protocol
+   * @param type Socket Type
+   * @param protocol (TCP or UDP)
+   * @throws SocketException if socket creation fails
+   */
+  Socket(SocketType type, Protocol protocol);
 
   Socket(const Socket&) = delete;
   Socket& operator=(const Socket&) = delete;
@@ -107,8 +116,11 @@ class Socket {
    */
   int getProtocol() const;
 
-  const EndpointAddress& getAddress() const;
-  EndpointAddress& getAddress();
+  EndpointAddress& getLocalAddress();
+  const EndpointAddress& getLocalAddress() const;
+
+  EndpointAddress& getRemoteAddress();
+  const EndpointAddress& getRemoteAddress() const;
 
  protected:
   Socket() = default;
@@ -116,7 +128,8 @@ class Socket {
 
   void configureDualStack();
 
-  EndpointAddress m_address;
+  EndpointAddress m_local_address;
+  EndpointAddress m_remote_address;
   int m_socket_fd;
   int m_family;
   int m_type;

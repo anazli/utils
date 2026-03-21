@@ -5,16 +5,7 @@
 namespace net {
 class UdpClient : public Socket {
  public:
-  UdpClient() = default;
-  /*
-   * Creates a UDP Client for the given host address and port number
-   * to connect to
-   * @param host IP address or hostname to connect
-   * @param port Port number as string
-   * @throws SocketException if address resolution or socket creation fails
-   */
-  UdpClient(const std::string& host, const std::string& port);
-  UdpClient(const EndpointAddress& address);
+  UdpClient();
 
   UdpClient(const UdpClient&) = delete;
   UdpClient& operator=(UdpClient&) = delete;

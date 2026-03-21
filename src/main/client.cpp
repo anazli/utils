@@ -12,12 +12,15 @@ int main() {
   while (!shouldExit(message)) {
     try {
       std::getline(std::cin, message);
-      net::TcpClient client("localhost", "8080");
+      net::TcpClient client;
       net::DataStream msg_to_send;
       msg_to_send.append(message);
 
+      net::EndpointAddress remote_address("localhost", "8080",
+                                          net::SocketType::TYPE_TCP);
+
       // std::cout << "Client connects to the server.." << std::endl;
-      client.connect();
+      client.connect(remote_address);
 
       // std::cout << "Client sends message to the server.." << std::endl;
       client.send(msg_to_send);
