@@ -71,4 +71,6 @@ TEST_F(TcpServerTest,
   EXPECT_THAT(result_msg.toString(), Eq(server_msg + client_msg));
   EXPECT_THAT(remote_client.getRemoteAddress().toString(),
               Eq(server.getLocalAddress().toString()));
+  EXPECT_THAT(server.getRemoteAddress().toString(),
+              Eq(remote_client.getLocalAddress().toString()));
 }
