@@ -36,6 +36,8 @@ class EndpointAddress {
 
   SocketType getSockType() const;
 
+  std::string toString() const;
+
  private:
   sockaddr_storage m_storage;
   socklen_t m_storage_len;

@@ -4,6 +4,13 @@
 
 #include <cstring>
 
+namespace {
+std::string stripIpv4MappedIpv6Address(const std::string& host) {
+  auto ipv6_prefix = std::string("::ffff:");
+  return host.find(ipv6_prefix) == 0 ? host.substr(ipv6_prefix.length()) : host;
+}
+}  // namespace
+
 /***************************************************************
  *
  * SocketException
@@ -65,6 +72,20 @@ socklen_t* net::EndpointAddress::getLen() { return &m_storage_len; }
 
 net::SocketType net::EndpointAddress::getSockType() const {
   return m_sock_type;
+}
+
+std::string net::EndpointAddress::toString() const {
+  char host[NI_MAXHOST];
+  char service[NI_MAXSERV];
+  if (auto result =
+          getnameinfo(reinterpret_cast<const sockaddr*>(&m_storage),
+                      m_storage_len, host, sizeof(host), service,
+                      sizeof(service), NI_NUMERICHOST | NI_NUMERICSERV);
+      result != 0) {
+    return "Unknown Address";
+  }
+
+  return stripIpv4MappedIpv6Address(host) + ":" + std::string(service);
 }
 
 /***************************************************************

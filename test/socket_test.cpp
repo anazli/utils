@@ -7,36 +7,43 @@
 
 using namespace testing;
 using namespace net;
+using net::Protocol;
+using net::SocketType;
 
 class SocketTest : public Test {
  public:
-  static constexpr auto remote_ip = std::string_view("www.example.com");
-  static constexpr auto local_ip = std::string_view("127.0.0.1");
-  static constexpr auto test_port = std::string_view("8080");
+  std::string local_ip = "127.0.0.1";
+  std::string test_port = "8080";
+  std::string ip_and_port = local_ip + ":" + test_port;
+  EndpointAddress test_address;
 };
 
 TEST_F(SocketTest, GivenInvalidInputWhenConstructsTCPThenItThrows) {
-  ASSERT_THROW(EndpointAddress a(EndpointAddress("", "", SocketType::TYPE_TCP)),
+  ASSERT_THROW(EndpointAddress a(EndpointAddress("", "", TYPE_TCP)),
                SocketException);
 }
 
 TEST_F(SocketTest, GivenInvalidInputWhenConstructsUDPThenItThrows) {
-  ASSERT_THROW(EndpointAddress a(EndpointAddress("", "", SocketType::TYPE_UDP)),
+  ASSERT_THROW(EndpointAddress a(EndpointAddress("", "", TYPE_UDP)),
                SocketException);
 }
 
 TEST_F(SocketTest, GivenValidInputWhenConstructsTCPThenSocketIsCreated) {
-  net::Socket s(EndpointAddress(), SocketType::TYPE_TCP, Protocol::PROT_TCP);
+  test_address = EndpointAddress(local_ip, test_port, TYPE_TCP);
+  net::Socket s(test_address, TYPE_TCP, PROT_TCP);
   EXPECT_THAT(s.getHandle(), Ne(-1));
   EXPECT_THAT(s.getType(), Eq(SOCK_STREAM));
   EXPECT_THAT(s.getFamily(), Eq(AF_INET6));
-  EXPECT_THAT(s.getProtocol(), Eq(Protocol::PROT_TCP));
+  EXPECT_THAT(s.getProtocol(), Eq(PROT_TCP));
+  EXPECT_THAT(s.getAddress().toString(), Eq(ip_and_port));
 }
 
 TEST_F(SocketTest, GivenValidInputWhenConstructsUDPThenSocketIsCreated) {
-  net::Socket s(EndpointAddress(), SocketType::TYPE_UDP, Protocol::PROT_UDP);
+  test_address = EndpointAddress(local_ip, test_port, TYPE_UDP);
+  net::Socket s(test_address, TYPE_UDP, PROT_UDP);
   EXPECT_THAT(s.getHandle(), Ne(-1));
   EXPECT_THAT(s.getType(), Eq(SOCK_DGRAM));
   EXPECT_THAT(s.getFamily(), Eq(AF_INET6));
-  EXPECT_THAT(s.getProtocol(), Eq(Protocol::PROT_UDP));
+  EXPECT_THAT(s.getProtocol(), Eq(PROT_UDP));
+  EXPECT_THAT(s.getAddress().toString(), Eq(ip_and_port));
 }
