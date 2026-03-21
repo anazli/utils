@@ -7,24 +7,18 @@ bool shouldExit(const std::string& message) {
 }
 
 int main() {
+  net::TcpClient client;
+  net::EndpointAddress remote_address("localhost", "8080");
+  client.connect(remote_address);
   std::string message;
   std::cout << "Enter message to send:" << std::endl;
   while (!shouldExit(message)) {
     try {
       std::getline(std::cin, message);
-      net::TcpClient client;
       net::DataStream msg_to_send;
       msg_to_send.append(message);
-
-      net::EndpointAddress remote_address("localhost", "8080");
-
-      // std::cout << "Client connects to the server.." << std::endl;
-      client.connect(remote_address);
-
-      // std::cout << "Client sends message to the server.." << std::endl;
       client.send(msg_to_send);
 
-      // std::cout << "Client receives message from the server.." << std::endl;
       net::DataStream received_msg(1024);
       client.recv(received_msg);
 
