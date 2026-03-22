@@ -4,7 +4,7 @@
 #include <unistd.h>
 
 #include <cstring>
-#include <iostream>
+#include <print>
 
 namespace {
 
@@ -51,8 +51,7 @@ void net::TcpServer::listenAndServe() {
   int epoll_fd;
   epoll_event ev, events[SOMAXCONN];
   bind();
-  std::cout << "Server is listening on port:" << m_local_address.getPort()
-            << std::endl;
+  std::println("Server is listening on port:{}", m_local_address.getPort());
   listen();
 
   epoll_fd = epoll_create1(0);
@@ -87,11 +86,10 @@ void net::TcpServer::listenAndServe() {
 }
 
 void net::TcpServer::handleNewConnection(int epoll_fd, epoll_event& event) {
-  std::cout << "Accepting new connection" << std::endl;
+  std::println("Accepting new connection");
   auto client = ::accept(m_socket_fd, m_remote_address.getSockAddr(),
                          m_remote_address.getLen());
-  std::cout << "Client: " << m_remote_address.toString() << " connected.."
-            << std::endl;
+  std::println("Client: {} connected..", m_remote_address.toString());
 
   event.events = EPOLLIN | EPOLLET;
   event.data.fd = client;
@@ -121,8 +119,8 @@ void net::TcpServer::handleClientEvent(int epoll_fd, epoll_event& event) {
   }
   received_msg.resize(bytes_received);
 
-  std::cout << "Server received the following message: "
-            << received_msg.toString() << std::endl;
+  std::println("Server received the following message: {}",
+               received_msg.toString());
 
   net::DataStream msg_to_send;
   msg_to_send.append(m_connected_clients[event.data.fd].toString() + ":")

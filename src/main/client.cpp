@@ -1,4 +1,5 @@
 #include <iostream>
+#include <print>
 #include <thread>
 
 #include "networking/tcp_server.h"
@@ -7,7 +8,10 @@ bool shouldExit(const std::string& message) {
   return message == "exit" || message == "quit";
 }
 
-void show_prompt() { std::cout << "> " << std::flush; }
+void show_prompt() {
+  std::print("\033[1;32m>\033[0m ");
+  std::fflush(stdout);
+}
 
 int main() {
   net::TcpClient client;
@@ -19,18 +23,18 @@ int main() {
       try {
         net::DataStream received_msg(1024);
         client.recv(received_msg);
-        std::cout /*<< "Succesfully received from server: "*/
-            << received_msg.toString() << std::endl;
+        std::println("{}", /*<< "Succesfully received from server: "*/
+                     received_msg.toString());
         show_prompt();
       } catch (const net::SocketException& e) {
-        std::cerr << e.what() << std::endl;
+        std::println(stderr, "{}", e.what());
       }
     };
   });
   listener.detach();
 
   std::string message;
-  std::cout << "Enter message to send:" << std::endl;
+  std::println("Enter message to send:");
   show_prompt();
 
   while (!shouldExit(message)) {
@@ -43,7 +47,7 @@ int main() {
       client.send(msg_to_send);
       show_prompt();
     } catch (const net::SocketException& e) {
-      std::cerr << e.what() << std::endl;
+      std::println(stderr, "{}", e.what());
     }
   }
 
