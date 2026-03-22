@@ -22,12 +22,16 @@ int main() {
     while (true) {
       try {
         net::DataStream received_msg(1024);
-        client.recv(received_msg);
+        if (auto bytes_received = client.recv(received_msg);
+            bytes_received == 0) {
+          return EXIT_FAILURE;
+        }
         std::println("{}", /*<< "Succesfully received from server: "*/
                      received_msg.toString());
         show_prompt();
       } catch (const net::SocketException& e) {
         std::println(stderr, "{}", e.what());
+        return EXIT_FAILURE;
       }
     };
   });
