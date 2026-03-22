@@ -31,7 +31,8 @@ net::EndpointAddress::EndpointAddress() : m_storage_len(sizeof(m_storage)) {
 }
 
 net::EndpointAddress::EndpointAddress(const std::string& ip,
-                                      const std::string& port) {
+                                      const std::string& port)
+    : m_port(port) {
   addrinfo hints, *result;
   std::memset(&hints, 0, sizeof(hints));
   hints.ai_family = AF_INET6;
@@ -57,6 +58,8 @@ sockaddr* net::EndpointAddress::getSockAddr() {
 const socklen_t* net::EndpointAddress::getLen() const { return &m_storage_len; }
 
 socklen_t* net::EndpointAddress::getLen() { return &m_storage_len; }
+
+std::string net::EndpointAddress::getPort() const { return m_port; }
 
 std::string net::EndpointAddress::toString() const {
   char host[NI_MAXHOST];

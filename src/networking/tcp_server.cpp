@@ -51,7 +51,8 @@ void net::TcpServer::listenAndServe() {
   int epoll_fd;
   epoll_event ev, events[SOMAXCONN];
   bind();
-  std::cout << "Server is listening..." << std::endl;
+  std::cout << "Server is listening on port:" << m_local_address.getPort()
+            << std::endl;
   listen();
 
   epoll_fd = epoll_create1(0);
@@ -121,7 +122,8 @@ void net::TcpServer::handleClientEvent(int epoll_fd, DataStream& buffer,
             << std::endl;
 
   net::DataStream msg_to_send;
-  msg_to_send.append("Server: ").append(buffer.data(), buffer.size());
+  msg_to_send.append(m_remote_address.toString() + ":")
+      .append(buffer.data(), buffer.size());
 
   if (auto bytes_sent =
           ::send(event.data.fd, msg_to_send.data(), msg_to_send.size(), 0);

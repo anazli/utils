@@ -33,11 +33,14 @@ class EndpointAddress {
   const socklen_t* getLen() const;
   socklen_t* getLen();
 
+  std::string getPort() const;
+
   std::string toString() const;
 
  private:
   sockaddr_storage m_storage;
   socklen_t m_storage_len;
+  std::string m_port;
 };
 
 class DataStream {
