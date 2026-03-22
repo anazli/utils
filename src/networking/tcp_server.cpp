@@ -80,8 +80,7 @@ void net::TcpServer::listenAndServe() {
         handleNewConnection(epoll_fd, ev);
       }  // if event is from client read input and respond
       else {
-        net::DataStream received_msg(1024);
-        handleClientEvent(epoll_fd, received_msg, events[conn]);
+        handleClientEvent(epoll_fd, events[conn]);
       }
     }
   }
@@ -99,11 +98,14 @@ void net::TcpServer::handleNewConnection(int epoll_fd, epoll_event& event) {
   if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, client, &event) == -1) {
     throw SocketException("[TcpServer::handleNewConnection]", strerror(errno));
   }
+
+  m_connected_clients[client] = m_remote_address;
 }
 
-void net::TcpServer::handleClientEvent(int epoll_fd, DataStream& buffer,
-                                       epoll_event& event) {
-  int bytes_received = ::recv(event.data.fd, buffer.data(), buffer.size(), 0);
+void net::TcpServer::handleClientEvent(int epoll_fd, epoll_event& event) {
+  net::DataStream received_msg(1024);
+  int bytes_received =
+      ::recv(event.data.fd, received_msg.data(), received_msg.size(), 0);
   if (bytes_received < 1) {
     if (bytes_received < 0 && (errno == EAGAIN || errno == EWOULDBLOCK)) {
       return;
@@ -114,20 +116,27 @@ void net::TcpServer::handleClientEvent(int epoll_fd, DataStream& buffer,
       throw SocketException("[TcpServer::handleClientEvent]", strerror(errno));
     }
     ::close(event.data.fd);
+    m_connected_clients.erase(event.data.fd);
     return;
   }
-  buffer.resize(bytes_received);
+  received_msg.resize(bytes_received);
 
-  std::cout << "Server received the following message: " << buffer.toString()
-            << std::endl;
+  std::cout << "Server received the following message: "
+            << received_msg.toString() << std::endl;
 
   net::DataStream msg_to_send;
-  msg_to_send.append(m_remote_address.toString() + ":")
-      .append(buffer.data(), buffer.size());
+  msg_to_send.append(m_connected_clients[event.data.fd].toString() + ":")
+      .append(received_msg.data(), received_msg.size());
 
-  if (auto bytes_sent =
-          ::send(event.data.fd, msg_to_send.data(), msg_to_send.size(), 0);
-      bytes_sent < 1) {
-    throw SocketException("[TcpServer::handleClientEvent]", strerror(errno));
+  broadcast(event.data.fd, msg_to_send);
+}
+
+void net::TcpServer::broadcast(int sender_fd, const net::DataStream& message) {
+  for (auto& [client, address] : m_connected_clients) {
+    if (client == sender_fd) continue;
+    if (auto bytes_sent = ::send(client, message.data(), message.size(), 0);
+        bytes_sent < 1) {
+      throw SocketException("[TcpServer::handleClientEvent]", strerror(errno));
+    }
   }
 }

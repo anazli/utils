@@ -2,6 +2,8 @@
 
 #include <sys/epoll.h>
 
+#include <unordered_map>
+
 #include "socket.h"
 #include "tcp_client.h"
 
@@ -43,7 +45,10 @@ class TcpServer : public Socket {
 
  private:
   void handleNewConnection(int epoll_fd, epoll_event& event);
-  void handleClientEvent(int epoll_fd, DataStream& buffer, epoll_event& event);
+  void handleClientEvent(int epoll_fd, epoll_event& event);
+  void broadcast(int sender_fd, const net::DataStream& message);
+
+  std::unordered_map<int, EndpointAddress> m_connected_clients;
 };
 
 }  // namespace net
