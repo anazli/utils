@@ -12,6 +12,15 @@ endif()
 
 list(APPEND CMAKE_PREFIX_PATH "${CMAKE_BINARY_DIR}/build/${CMAKE_BUILD_TYPE}/generators")
 
+include(FetchContent)
+
+FetchContent_Declare(
+	sqlite3
+	GIT_REPOSITORY https://github.com/sqlite/sqlite.git
+	GIT_TAG        master
+)
+FetchContent_MakeAvailable(sqlite3)
+
 add_library(utilities
 	include/networking/socket.h
 	src/networking/socket.cpp
@@ -42,6 +51,12 @@ target_include_directories(client PUBLIC
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
 target_link_libraries(client PRIVATE utilities)
+
+add_executable(sqlite src/main/sqlite.cpp)
+target_include_directories(sqlite PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+)
+target_link_libraries(sqlite PRIVATE utilities sqlite3)
 
 if(ENABLE_TESTING)
 	enable_testing()
